@@ -8,7 +8,10 @@
 
 * genbank
 
-* annotation - 
+* annotations - 
 
-* searching
-* distance matrices
+* searching - storage isn't enough 
+* how to query a sequence database, distance matrices
+* BLAST
+
+* local BLAST
