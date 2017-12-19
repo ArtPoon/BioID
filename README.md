@@ -8,32 +8,32 @@ A collection of online reference materials for an undergraduate course.
 * To become acquainted with popular software tools used for the analysis of infectious disease sequence data.
 
 ## Outline
-1. Databases
+1. [Databases](Databases.md)
    * NCBI GenBank
    * scoring matrices
    * BLAST queries
-2. Alignment
+2. [Alignment](Alignment.md)
    * Smith-Waterman and related algorithms
    * short-read mapping
-3. Genetic clustering 
+3. [Genetic clustering](Clustering.md)
    * measures of diversity
    * genetic distances
    * virus nomenclature
    * molecular epidemiology
-4. Building trees
+4. [Building trees](Trees.md)
    * Distance-based methods
    * Rooting (outgroup, midpoint, root-to-tip)
    * The number of trees
-5. Fitting models
+5. [Measuring rates of evolution](Rates.md)
    * Markov chain models
    * Rates of evolution
    * Maximum likelihood
    * Detecting selection
-6. Molecular clocks
+6. [Molecular clocks](Clocks.md)
    * Rescaling trees
    * Root-to-tip methods
    * Lineages-through-time plots, incidence
-7. Epidemic models
+7. [Modeling epidemics](Models.md)
    * Kingman's coalescent
    * Bayesian inference
    * Demographic growth models (skylines)
