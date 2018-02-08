@@ -1,3 +1,9 @@
+---
+layout: page
+---
+
+{% include toc.html %}
+
 # Databases
 
 ## Bioinformatics is about data

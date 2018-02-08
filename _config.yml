@@ -1,0 +1,33 @@
+# Site settings
+title: Bioinformatics of Infectious Diseases
+email: apoon42@uwo.ca
+description: >- # this means to ignore newlines until "baseurl:"
+  Course materials for an undergraduate course on bioinformatics
+  and its application to the study and management of infectious 
+  diseases, with an emphasis on virus evolution, phylogenetics,
+  and molecular epidemiology.
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "" # the base hostname & protocol for your site, e.g. http://example.com
+twitter_username: art_poon
+github_username:  ArtPoon
+
+# Build settings
+markdown: kramdown
+theme: minima
+plugins:
+  - jekyll-feed
+
+kramdown:
+  parse_block_html: true
+
+# Exclude from processing.
+# The following items will not be processed, by default. Create a custom list
+# to override the default setting.
+# exclude:
+#   - Gemfile
+#   - Gemfile.lock
+#   - node_modules
+#   - vendor/bundle/
+#   - vendor/cache/
+#   - vendor/gems/
+#   - vendor/ruby/
