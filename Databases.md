@@ -1,10 +1,9 @@
 ---
 layout: page
+title: Databases
 ---
 
 {% include toc.html %}
-
-# Databases
 
 ## Bioinformatics is about data
 Bioinformatics exists because it has become increasingly more afforadble, faster and easier to generate massive amounts of complex biological data sets.  Presently, we can measure "mass" in [gigabytes](https://en.wikipedia.org/wiki/Gigabyte), although this unit will likely become outdated in a number of years, and storage devices begin to be issued with capacities measured in petabytes instead of terabytes.  To put this in context, a plain text file containing the consensus sequence for chromosome 2 of the human genome reference assembly *hg38* takes up about a quarter of a gigabyte:

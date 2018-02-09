@@ -80,7 +80,13 @@ html {
   color: #fff;
   margin-top: 0;
   font-family: "Cabin", sans-serif;
-  font-size: 1.5rem;
+  font-size: 1.7rem;
+  font-weight: 700;
+}
+
+.sidebar-nowrap span {
+  color: #fff;
+  white-space: nowrap;
 }
 
 /* Sidebar nav */
@@ -233,11 +239,11 @@ a.sidebar-nav-item:focus {
 
 /* Magenta */
 .theme-base-0e .sidebar {
-  background-color: #aa759f;
+  background-color: #6b8e23;
 }
 .theme-base-0e .content a,
 .theme-base-0e .related-posts li a:hover {
-  color: #aa759f;
+  color: #6b8e23;
 }
 
 /* Brown */

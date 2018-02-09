@@ -1,6 +1,9 @@
-# Bioinformatics of Infectious Diseases
+---
+layout: page
+title: About
+---
 
-A collection of online reference materials for an undergraduate course.
+{{site.description}}
 
 ## Learning objectives
 * To develop a fundamental understanding of the concepts underlying the analysis of genetic sequence variation from infectious disease outbreaks (genetic distances, maximum likelihood).
@@ -39,6 +42,14 @@ A collection of online reference materials for an undergraduate course.
    * Demographic growth models (skylines)
    * Compartmental epidemic models
 
+
+## GitHub repository
+
+All code used to implement this website can be obtained on [GitHub]({{ site.github_repo }}).
+
+## License
+
+These course materials are released into the public domain under the [Creative Commons Attribution-ShareAlike 4.0](https://creativecommons.org/licenses/by-sa/4.0/) license, under which you are free to copy, modify and redistribute this content, even for commercial purposes, so long as that derived content is distributed under this same license.
 
 
 
