@@ -36,12 +36,12 @@ html {
 }
 @media (min-width: 48rem) {
   html {
-    font-size: 16px;
+    font-size: 12px;
   }
 }
 @media (min-width: 58rem) {
   html {
-    font-size: 20px;
+    font-size: 16px;
   }
 }
 
@@ -80,7 +80,7 @@ html {
   color: #fff;
   margin-top: 0;
   font-family: "Cabin", sans-serif;
-  font-size: 1.7rem;
+  font-size: 1.8rem;
   font-weight: 700;
 }
 

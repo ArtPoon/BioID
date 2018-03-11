@@ -1,25 +1,32 @@
 
 <style>
-
+div.wrapper {
+  text-align: center;
+}
 div.example {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  text-align: center;
 }
 </style>
+
+
+<div id="wrapper">
+  <div id="example"></div>
+</div>
 
 <script src="/public/js/d3.v3.min.js"></script>
 <script>
 
-var w = 300,
-    h = 300;
+var w = 400,
+    h = 400;
 
 
-var nodes = d3.range(200).map(function() { 
-                return {radius: Math.random() * 12 + 4}; 
+var nodes = d3.range(100).map(function() { 
+                return {radius: 12}; 
             }),
     color = d3.scale.category10();
 
 var force = d3.layout.force()
-            .gravity(0.05)
+            .gravity(0.1)
             .nodes(nodes)
             .size([w, h]);
 
@@ -31,15 +38,16 @@ force.start();
 
 
 var svg = d3.select("div#example")
-          .selectAll("svg")
-          .attr("width", w)
-          .attr("height", h);
+          .append("svg");
+
+svg.attr("width", w)
+   .attr("height", h);
 
 svg.selectAll("circle")
    .data(nodes.slice(1))
    .enter().append("svg:circle")
    .attr("r", function(d) { return d.radius - 2; })
-   .style("fill", function(d, i) { return color(i % 3); } );
+   .style("fill", function(d, i) { return color(i % 4); } );
 
 force.on("tick", function(e) {
   var q = d3.geom.quadtree(nodes),
@@ -56,14 +64,20 @@ force.on("tick", function(e) {
 });
 
 svg.on("mousemove", function() {
-  var p1 = d3.svg.mouse(this);
+  var p1 = d3.mouse(this);
   root.px = p1[0];
   root.py = p1[1];
   force.resume();
 });
 
+window.addEventListener("scroll", function(e) {
+  root.px = Math.random() * w;
+  root.py = Math.random() * h;
+  force.resume();
+});
+
 function collide(node) {
-  var r = node.radius + 16,
+  var r = node.radius + 1,
       nx1 = node.x - r,
       nx2 = node.x + r,
       ny1 = node.y - r,
@@ -90,7 +104,4 @@ function collide(node) {
 }
 
 </script>
-
-<div id="example">svg here</div>
-
 

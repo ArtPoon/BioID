@@ -12,7 +12,9 @@ The amount of similarity that is sufficient to define a cluster is subjective, a
 If you drop a handful of jellybeans in a bowl, your eyes will naturally be drawn to what you perceive as patterns.
 
 <!-- jellybean bowl animation -->
+<center>
 {% include example.html %}
+</center>
 
 Clusters are useful because they can reveal underlying processes that shape the data.
 There is also an intuitive appeal to clustering, since we are naturally inclined to impose order on our sensory inputs.
