@@ -3,25 +3,25 @@
   div.wrapper {
     text-align: center;
   }
-  div.example {
+  div.cluster {
     text-align: center;
   }
-        .link {
-            stroke: #aaa;
-            stroke-width: 2px;
-        }
+  .link {
+    stroke: #aaa;
+    stroke-width: 2px;
+  }
 
-        .node {
-            stroke: #fff;
-            stroke-width: 2px;
-        }
-        .textClass {
-            stroke: #323232;
-            font-family: "Lucida Grande", "Droid Sans", Arial, Helvetica, sans-serif;
-            font-weight: normal;
-            stroke-width: .5;
-            font-size: 14px;
-        }
+  .node {
+    stroke: #fff;
+    stroke-width: 2px;
+  }
+  .textClass {
+    stroke: #323232;
+    font-family: "Lucida Grande", "Droid Sans", Arial, Helvetica, sans-serif;
+    font-weight: normal;
+    stroke-width: .5;
+    font-size: 14px;
+  }
 </style>
 
 
@@ -36,6 +36,9 @@
 <script>
 
 // adapted by @ArtPoon from http://bl.ocks.org/hugolpz/cd89b50d834828261b45af9e7a5ce926
+
+
+
 var graph;
 var vis;
 var data = {
@@ -143,8 +146,8 @@ function myGraph() {
     };
 
     // =================== set up d3 ===================
-    var w = 960,  // width
-        h = 700;  // height
+    var w = 400,  // width
+        h = 300;  // height
 
     var color = d3.scale.ordinal()
         .domain(["S", "I", "R"])
@@ -218,6 +221,9 @@ function myGraph() {
 
     update();  // go!
 }
+
+
+drawGraph("cluster");
 
 
 function drawGraph() {

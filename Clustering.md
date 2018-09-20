@@ -254,7 +254,7 @@ This table is equivalent to a symmetric matrix and we often refer to it as the [
 Next, we select a distance cutoff.
 Any pair of sequences with a distance below this cutoff are assigned to the same cluster.
 This is frequently visualized as a network, more formally known as a [graph](https://en.wikipedia.org/wiki/Graph_(discrete_mathematics)).
-Thus, every sequence is represented by a point 
+Thus, every sequence is represented by a node in the graph, and each connection between nodes indicates that the respective infections are within the cutoff distance of each other.
 
 <center>
 {% include cluster.html %}
@@ -263,7 +263,43 @@ Thus, every sequence is represented by a point
 
 ## Tree-based clustering
 
+We will explore the topic of reconstructing phylogenetic trees more fully in [another section](Trees.md).
+However, we're going to get a bit ahead of ourselves so that we can talk about the other major class of nonparametric clustering methods that are based on trees.
+A tree is a model of how different populations are related by common ancestors.
+When we're using trees to cluster infections of a certain pathogen, each tip of the tree represents an infection.
+Infections that are connected by one common ancestor in the tree are more closely related to each other than to any other infection in the tree.
+For example, the tree below indicates that humans are more closely related to chimpanzees than apes.
+
+<center>
+  <img src="/public/img/chimpanzee.svg" width="300px"/>
+</center>
+
+(Note that I've used the same branch lengths to emphasize that the only information we are using here is the branching order.)
+The premise that an ancestral node separates the tree into more closely related groups is an important concept for using trees to cluster sequences.
+
+
 ### Bootstrapping
+
+When we reconstruct tree from a multiple sequence alignment, we cannot be certain that any single tree produced by the reconstruction method is the *correct* tree.
+How can we determine our [confidence level](https://en.wikipedia.org/wiki/Confidence_interval) in specific features in our reconstructed tree (such as the assertion that A is more closely related to B)?
+One possible approach is to collect replicate data sets - that is, sequence additional loci from the same taxa.
+In practice, however, it is often not feasible to replicate the entire data set over different loci many times or even once!
+For this reason, [Joe Felsenstein](https://en.wikipedia.org/wiki/Joseph_Felsenstein) applied a concept from [computational statistics](https://en.wikipedia.org/wiki/Category:Computational_statistics) known as bootstrapping.
+
+The basic idea behind bootstrapping is that, without the availability of any additional data, our only recourse is to "pull ourselves up by our own bootstraps".
+We take the data we already have, and then we pretend that it is the source of all possible data.
+By making this strange assumption, we can sample observations from the data [at random with replacement](https://en.wikipedia.org/wiki/Sample_(statistics)), which artificially makes the original data set unlimited in size.
+In the case of assessing our confidence in a reconstructed tree, we take the original alignment and sample columns from this alignment at random with replacement until we can assemble a new alignment with the same dimensions as the original (*e.g.,* the same number of rows and columns).
+Using this resampled alignment, we use the same process to reconstruct a tree that was used for the original alignment, and repeat the process until we have a new collection of trees.
+
+Suppose we want to measure our confidence level that taxon A is the most closely related to B.
+We can accomplish this by counting the number of trees in our bootstrap sample set where this assertion is true.
+
+
+### Branch lengths
+
+The branches that connect the tips to common ancestors are often scaled so that a branch's length approximates the elapsed time.
+
 
 
 ## References
