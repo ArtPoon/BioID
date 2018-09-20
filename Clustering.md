@@ -53,27 +53,27 @@ Many infectious diseases, such as bacteria or viruses, are difficult to categori
 For example, bacteria can exchange genetic material with other bacteria, which are otherwise evolutionarily unrelated, by some method of [horizontal transfer](http://wikipedia.org/...).
 Even so, it is convenient -- if not a scientific or clinical imperative -- to be able to refer to a particular virus as belonging to one species or another.
 Since many pathogens lack a large number of measurable characteristics, it has become increasingly acceptable to define a species based on its genetic dissimilarity to others alone.
-The International Council on the Taxonomy of Viruses recently passed a resolution to accept a new virus species definition based solely on a cluster of sequence variation in an environmental sample. <!-- ref? -->
-Thus, a taxonomy or nomenclature of microbial species can be proposed by finding clusters of genetic similarity.
-For example, a recent study by <!- JC paper with Eddie Holmes -> performed extensive next generation sequencing of RNA from a large number of underrepresented host taxonomic groups, including fish and ...
+The [International Committee on the Taxonomy of Viruses] (ICTV) recently passed a resolution to accept a new virus species definition based solely on a cluster of sequence variation in an environmental sample. <!-- ref? -->
+Thus, a taxonomy of microbial species can be proposed by finding clusters of genetic similarity.
+For example, a recent study by <!-- JC paper with Eddie Holmes --> performed extensive next generation sequencing of RNA from a large number of underrepresented host taxonomic groups, including fish and ...
 
 
 
 <!-- examples of clustering for taxonomy -->
-
-<!- what is this? -> 
+Below the species level, clustering can also be used to define a nomenclature of subtypes or genotypes within a species.
+Loosely defined, a subtype is a genetically-distinct cluster that share a common ancestor.
+Subtypes tend to have a characteristic global distribution that may be attributed to a founder effect, where a particular variant seeds a new epidemic in a relatively isolated population (such as a continent) with limited migration with the source population.
 
 
 ### Epidemiology
 
-* subtypes and genotypes - HIV is easy, are there bacterial examples?
-* E.coli?
 
 
 ## Genetic distances
 
 In order to declare that two sequences are similar, we need to have some way of measuring that similarity.
 A genetic distance is any method that takes two sequences as inputs and yields a number that is meant to quantify how different they are.
+The distance of a sequence to itself should always be zero, and it should always return a non-negative number otherwise.
 There is a countless number of possible genetic distances and you will encounter at least several of these in this course alone.
 A broad categorization for distances is to make a distinction between distances that require the sequences to be [aligned](Alignment.md) to each other, and distances that do not.
 
@@ -111,14 +111,31 @@ Next, I set the second input to a string of A's (zero GC content), so the distan
 Finally, I compared one sequence with zero GC content to a second sequence made up entirely of G's and C's to obtain the maximum possible distance of 1.
 
 This genetic distance is intuitive and was fairly easy to implement if you know a bit of Python - but it's also not terribly informative.
-One way of thinking about this is that the set of all possible sequences that is within a distance of 0.1 to some other sequence is infinitely large (think about it!).
+One way of thinking about this is that the set of all possible sequences that is within a distance of 0.1 to some other sequence is infinitely large.
+For example, the sequence `ACCAGTCAGCTAG` has the same distance from `AC`, `AACC`, `AAACCC` and so on with an infinite number of permutations.
+Here I briefly review some alignment-free distances from the literature that actually see some use in practice:
 
-* Lempel-Ziv
+* The [Levenshtein distance](https://en.wikipedia.org/wiki/Levenshtein_distance) is the minimum number of operations (replace, add or delete a letter) to transform one sequence into another. 
+  For example the Levenshtein distance between the sequences `ACGT` and `CGTA` is 2, but the Hamming distance is 4. 
+  Since we can add or remove letters, the Levenshtein distance is defined for sequences with different lengths (*e.g.*, `ACGT` and `CGT`), but the [Hamming distance](https://en.wikipedia.org/wiki/Hamming_distance) is not. 
 
-* Levenshtein distance
+* A [k-mer]() distance can be calculated by breaking each sequence down to all strings of length *k*. 
+  For example, the sequence `ACGTA` can be broken down into three 3-mers (k=3): `ACG`, `CGT` and `GTA`.
+  Next, we do the same operation for a second sequence `GTACGTA`, which gives us the 3-mers `GTA`, `TAC`, `ACG`, `CGT` and `GTA`.
+  Suppose we next make a table with all possible nucleotide 3-mers, all the way from `AAA` to `TTT`, and tabulate the frequencies for the two sequences:
+  
+  | 3-mer | seq 1 | seq 2 |
+  |-------|-------|-------|
+  | `AAA` | 0     | 0     |
+  | `ACG` | 1     | 1     |
+  | `CGT` | 1     | 1     |
+  | `GTA` | 1     | 2     |
+  | `TAC` | 0     | 1     |
+  
+  Note that I've omitted many rows with zero counts in both sequences for brevity.
+  Now we can extract a distance from this table using one of several different methods.
+  
 
-* k-mer distance
-  * examples
 
 
 ### Distances on aligned sequences
@@ -185,18 +202,72 @@ At some point, the sequences that are accumualating mutations at random will not
 To illustrate, let's assume that the four nucleotides are always at equal frequencies, *e.g.,* on average, 25% of the nucleotides in a sequence will be "A", and so on.
 As the sequences evolve apart, they will eventually become so distantly related that one sequence is equivalent to drawing nucleotides completely at random, as far as the number of differences from the other sequence is concerned.
 
-<!-- divergence simulator -->
+The first study to derive a formula to correct the p-distance for multiple hits was published by Jukes and Cantor (1969).
+This formula makes a number of assumptions:
+1. that the four nucleotides exist at equal frequencies;
+2. that substitutions occur at the same rate between any two nucleotides;
+3. that the substitution rates are constant over time; and
+4. that the substitution rates are the same for every site in the genome.
+
+Under these assumptions, the Jukes-Cantor model predicts that the number of substitutions that *actually* occurred between two sequences with a p-distance of *p* is:
+
+$$d = -\frac{3}{4}\ln\left(1-\frac{4}{3}p\right)$$
+
+where $$\ln$$ is the [natural logarithm](https://en.wikipedia.org/wiki/Natural_logarithm).
+
+Here is what this formula looks like:
+
+<center>
+{% include jukes-cantor.html %}
+</center>
 
 
-## Nonparametric clustering
+### Named nucleotide distances
 
-### Distance-based clustering
+Jukes and Cantor's landmark paper was followed by a number of refinements on their basic model that reduce one or more of the assumptions. 
+
+* Kimura 2-parameter (K2P) adds a parameter to distinguish between transition and transversion rates.  
+  Transitions are substitutions between [purines](https://en.wikipedia.org/wiki/Purine) (A's and G's) or between [pyridmidines](https://en.wikipedia.org/wiki/Pyrimidine) (C's and T's).
+  These tend to occur faster than transitions (substitutions between a purine and pyrimidine, or vice versa), in part because transitions are less likely to cause an amino acid substitution given the [genetic code](https://en.wikipedia.org/wiki/Genetic_code) &mdash; this is sometimes referred to as the transition bias.
+* Tajima-Nei (1984) distance allows for unequal equilibrium base frequencies.
+  We assume that an evolving nucleotide sequence will eventually comprise nucleotides at these frequencies, given sufficient time to converge to this equilibrium.
+* The Tamura 3-parameter (1992) distance combines the transition bias of the K2P distance with the unequal base frequencies of the Tajima-Nei distance.
+* Tamura-Nei (1993; TN93) extends the Tamura 3-parameter distance by adding a fourth parameter to differentiate between the two types of transitions (those involving A and G, and involving C and T).
 
 
-### Tree-based clustering
 
 
-## Parametric clustering
+## Distance-based clustering
 
+Genetic distances provide a straight-forward basis for clustering sequences.
+First, we need to select a genetic distance and then compute this distance for every pair of sequences in the data.
+The complete set of all pairwise distances can be arranged as a table where the sequences are arranged in the same order along the rows and columns:
+
+|   | seq1 | seq2 | seq3 |
+|---|------|------|------|
+| seq1 | 0 | 0.12 | 0.31 |
+| seq2 | 0.12 | 0 | 0.40 |
+| seq3 | 0.31 | 0.40 | 0 |
+
+This table is equivalent to a symmetric matrix and we often refer to it as the [distance matrix](https://en.wikipedia.org/wiki/Distance_matrix).
+
+Next, we select a distance cutoff.
+Any pair of sequences with a distance below this cutoff are assigned to the same cluster.
+This is frequently visualized as a network, more formally known as a [graph](https://en.wikipedia.org/wiki/Graph_(discrete_mathematics)).
+Thus, every sequence is represented by a point 
+
+<center>
+{% include cluster.html %}
+</center>
+
+
+## Tree-based clustering
+
+### Bootstrapping
+
+
+## References
+
+* Jukes Cantor
 
 
