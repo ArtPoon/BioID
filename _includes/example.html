@@ -63,7 +63,7 @@ force.on("tick", function(e) {
       .attr("cy", function(d) { return d.y; });
 });
 
-svg.on("mousemove", function() {
+svg.on("mouseover", function() {
   var p1 = d3.mouse(this);
   root.px = p1[0];
   root.py = p1[1];

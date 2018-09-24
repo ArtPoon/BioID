@@ -1,72 +1,16 @@
 ---
 layout: page
-title: Clustering
+title: Genetic diversity
 ---
 
 {% include toc.html %}
 
-## What are clusters?
+## What is diversity?
 
-A cluster is a subset of objects that are more similar to each other than they are to objects that are not in the cluster.
-The amount of similarity that is sufficient to define a cluster is subjective, and clusters can occur entirely by chance. 
-If you drop a handful of jellybeans in a bowl, your eyes will naturally be drawn to what you perceive as patterns.
-
-<!-- jellybean bowl animation -->
-<center>
-{% include example.html %}
-</center>
-
-Clusters are useful because they can reveal underlying processes that shape the data.
-There is also an intuitive appeal to clustering, since we are naturally inclined to impose order on our sensory inputs.
-
-A clustering method is a formal set of rules (an algorithm) for defining which observations will be grouped together.
-There are an endless number of clustering methods, so it helps to cluster them into distinct categories (ha!). 
-Clustering methods can be *supervised* or *unsupervised*. 
-A method is supervised if you tip off the algorithm with a number of examples that you have assigned to clusters.
-Otherwise, the algorithm has to figure out for itself how many clusters exist in the data, and needs to assign data to those clusters without any help.
-
-Clustering methods can be *nonparametric* or *parametric*. 
-A nonparametric method uses only the observed distribution of characteristics in the data to make decisions about clusters.
-For example, suppose we take the time between cars that pass some point on a highway. 
-This gives us some distribution that might look something like this:
-<!-- negative binomial distribution here? or mixture model? -->
-If we draw a line through this distribution and 
-
-Clustering methods can be *agglomerative* or *dissortative*.
-Agglomerative (or hierarchical, bottom-up) methods begin with every observation belonging to its own cluster of one. 
-Next, the algorithm attempts to merge two clusters A and B together to form a new cluster AB.
-Generally speaking, the next pair of clusters we want to merge should be the most similar. However similarity is not a trivial thing to measure. 
-What if each data point has a large number of characteristics? 
-Do we pick one characteristic on which to cluster the data?
-How do we combine information from multiple characteristics?
-Furthermore, it's up to the algorithm to decide what AB is going to "look like" when comparing it to other clusters.
-At some point it will need to decide whether to merge AB with another cluster.
-
-Dissortative (top-down) methods begin with every observation belonging to a single cluster, and then separates data points within a cluster to form two or more new clusters.
+### Quasispecies
 
 
-## Clusters and infectious diseases
-
-
-### Diversity
-Many infectious diseases, such as bacteria or viruses, are difficult to categorize into groups like *species* because conventional [species concepts](), such as [reproductive isolation](), do not readily apply.
-For example, bacteria can exchange genetic material with other bacteria, which are otherwise evolutionarily unrelated, by some method of [horizontal transfer](http://wikipedia.org/...).
-Even so, it is convenient -- if not a scientific or clinical imperative -- to be able to refer to a particular virus as belonging to one species or another.
-Since many pathogens lack a large number of measurable characteristics, it has become increasingly acceptable to define a species based on its genetic dissimilarity to others alone.
-The [International Committee on the Taxonomy of Viruses] (ICTV) recently passed a resolution to accept a new virus species definition based solely on a cluster of sequence variation in an environmental sample. <!-- ref? -->
-Thus, a taxonomy of microbial species can be proposed by finding clusters of genetic similarity.
-For example, a recent study by <!-- JC paper with Eddie Holmes --> performed extensive next generation sequencing of RNA from a large number of underrepresented host taxonomic groups, including fish and ...
-
-
-
-<!-- examples of clustering for taxonomy -->
-Below the species level, clustering can also be used to define a nomenclature of subtypes or genotypes within a species.
-Loosely defined, a subtype is a genetically-distinct cluster that share a common ancestor.
-Subtypes tend to have a characteristic global distribution that may be attributed to a founder effect, where a particular variant seeds a new epidemic in a relatively isolated population (such as a continent) with limited migration with the source population.
-
-
-### Epidemiology
-
+## Measures of diversity
 
 
 ## Genetic distances
@@ -235,6 +179,68 @@ Jukes and Cantor's landmark paper was followed by a number of refinements on the
 * Tamura-Nei (1993; TN93) extends the Tamura 3-parameter distance by adding a fourth parameter to differentiate between the two types of transitions (those involving A and G, and involving C and T).
 
 
+
+
+
+# Clustering
+
+A cluster is a subset of objects that are more similar to each other than they are to objects that are not in the cluster.
+The amount of similarity that is sufficient to define a cluster is subjective, and clusters can occur entirely by chance. 
+If you drop a handful of jellybeans in a bowl, your eyes will naturally be drawn to what you perceive as patterns.
+
+<!-- jellybean bowl animation -->
+<center>
+{% include example.html %}
+</center>
+
+Clusters are useful because they can reveal underlying processes that shape the data.
+There is also an intuitive appeal to clustering, since we are naturally inclined to impose order on our sensory inputs.
+
+A clustering method is a formal set of rules (an algorithm) for defining which observations will be grouped together.
+There are an endless number of clustering methods, so it helps to cluster them into distinct categories (ha!). 
+Clustering methods can be *supervised* or *unsupervised*. 
+A method is supervised if you tip off the algorithm with a number of examples that you have assigned to clusters.
+Otherwise, the algorithm has to figure out for itself how many clusters exist in the data, and needs to assign data to those clusters without any help.
+
+Clustering methods can be *nonparametric* or *parametric*. 
+A nonparametric method uses only the observed distribution of characteristics in the data to make decisions about clusters.
+For example, suppose we take the time between cars that pass some point on a highway. 
+This gives us some distribution that might look something like this:
+<!-- negative binomial distribution here? or mixture model? -->
+If we draw a line through this distribution and 
+
+Clustering methods can be *agglomerative* or *dissortative*.
+Agglomerative (or hierarchical, bottom-up) methods begin with every observation belonging to its own cluster of one. 
+Next, the algorithm attempts to merge two clusters A and B together to form a new cluster AB.
+Generally speaking, the next pair of clusters we want to merge should be the most similar. However similarity is not a trivial thing to measure. 
+What if each data point has a large number of characteristics? 
+Do we pick one characteristic on which to cluster the data?
+How do we combine information from multiple characteristics?
+Furthermore, it's up to the algorithm to decide what AB is going to "look like" when comparing it to other clusters.
+At some point it will need to decide whether to merge AB with another cluster.
+
+Dissortative (top-down) methods begin with every observation belonging to a single cluster, and then separates data points within a cluster to form two or more new clusters.
+
+
+
+### Clustering and diversity
+Many infectious diseases, such as bacteria or viruses, are difficult to categorize into groups like *species* because conventional [species concepts](), such as [reproductive isolation](), do not readily apply.
+For example, bacteria can exchange genetic material with other bacteria, which are otherwise evolutionarily unrelated, by some method of [horizontal transfer](http://wikipedia.org/...).
+Even so, it is convenient -- if not a scientific or clinical imperative -- to be able to refer to a particular virus as belonging to one species or another.
+Since many pathogens lack a large number of measurable characteristics, it has become increasingly acceptable to define a species based on its genetic dissimilarity to others alone.
+The [International Committee on the Taxonomy of Viruses] (ICTV) recently passed a resolution to accept a new virus species definition based solely on a cluster of sequence variation in an environmental sample. <!-- ref? -->
+Thus, a taxonomy of microbial species can be proposed by finding clusters of genetic similarity.
+For example, a recent study by <!-- JC paper with Eddie Holmes --> performed extensive next generation sequencing of RNA from a large number of underrepresented host taxonomic groups, including fish and ...
+
+
+
+<!-- examples of clustering for taxonomy -->
+Below the species level, clustering can also be used to define a nomenclature of subtypes or genotypes within a species.
+Loosely defined, a subtype is a genetically-distinct cluster that share a common ancestor.
+Subtypes tend to have a characteristic global distribution that may be attributed to a founder effect, where a particular variant seeds a new epidemic in a relatively isolated population (such as a continent) with limited migration with the source population.
+
+
+### Epidemiology
 
 
 ## Distance-based clustering
