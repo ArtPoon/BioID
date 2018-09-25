@@ -22,6 +22,16 @@ We can't be certain whether it was an insertion or deletion (or both!) that occu
 
 ### Pairwise sequence alignment
 
+Algorithms for aligning pairs of sequences are a cornerstone of bioinformatics. 
+Generally, these algorithms use a concept from computer science called [dynamic programming](https://en.wikipedia.org/wiki/Dynamic_programming), in which a complex problem can be broken down into a sequence of much smaller, simpler recursive problems.
+An early example of a dynamic programming algorithm for aligning two sequences was described by Needleman and Wunsch in 1970. 
+Their algorithm (now known as the Needleman-Wunsch algorithm) produces a "global" alignment in which the two sequences are assumed to be homologous over their entire lengths. 
+
+Below, I've embedded an interactive JavaScript animation that was written by [Mostafa Abdelraouf](https://github.com/drdrsh) that implements the Needleman-Wunsch algorithm:
+{% include needleman.html %}
+
+
+
 
 ### Multiple sequence alignment
 
