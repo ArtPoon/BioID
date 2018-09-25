@@ -23,9 +23,31 @@ We can't be certain whether it was an insertion or deletion (or both!) that occu
 ### Pairwise sequence alignment
 
 Algorithms for aligning pairs of sequences are a cornerstone of bioinformatics. 
-Generally, these algorithms use a concept from computer science called [dynamic programming](https://en.wikipedia.org/wiki/Dynamic_programming), in which a complex problem can be broken down into a sequence of much smaller, simpler recursive problems.
-An early example of a dynamic programming algorithm for aligning two sequences was described by Needleman and Wunsch in 1970. 
+If two sequences have descended from a common ancestor, then there is some unknown number of mutations (substitutions, insertions and deletions) that have caused these sequences to become different from each other. 
+For closely related sequences, it may be feasible to reconstruct these mutational events (see [Thorne *et al.* 1991](https://link.springer.com/article/10.1007%2FBF02193625)), but the complexity of this reconstruction problem grows rapidly with divergence time.
+Consequently, instead of explicitly modeling these mutations, we usually use a [heuristic method](https://en.wikipedia.org/wiki/Heuristic) to estimate how the sequences are related to each other.
+A heuristic is an algorithm for solving a problem that has no theoretical guarantee of accuracy or efficiency, but instead is convenient and yields a "good enough" solution in practice.
+
+
+Generally, the heuristic algorithms that we use for pairwise alignment rely on a concept from computer science called [dynamic programming](https://en.wikipedia.org/wiki/Dynamic_programming), in which a complex problem can be broken down into a sequence of much smaller, simpler recursive problems.
+Perhaps the earliest example of a dynamic programming algorithm for aligning two sequences was described by Needleman and Wunsch in 1970. 
 Their algorithm (now known as the Needleman-Wunsch algorithm) produces a "global" alignment in which the two sequences are assumed to be homologous over their entire lengths. 
+
+First, we are required to decide how to score matched and mismatched residues. 
+These scores can be parameterized from a pre-existing alignment of sequences - for example, the [BLOSUM]() matrices quantify the empirical frequencies of amino acid substitutions in a database of trusted protein alignments (see this course's readings on [databases](Databases.md)).
+By convention, these scores are assigned integer values. 
+Positive scores are used to reward an alignment for lining up matching nucleotides or amino acids.
+Conversley, negative scores are used to penalize an alignment for lining up unmatched residues. 
+For the nucleotides, the score matrix has 4 rows and 4 columns.
+It is more common to parameterize the nucleotide score matrix with two values (one for a match, and a second for a mismatch) than to base these values on empirical frequencies.
+For example, if we use a `5` for a match and `-4` for a mismatch, then we have the following score matrix:
+
+|   | A | C | G | T |
+|---|---|---|---|---|
+| **A** | `5` | `-4` | `-4` | `-4` |
+| **C** | `-4` | `5` | `-4` | `-4` |
+| **G** | `-4` | `-4` | `5` | `-4` |
+| **T** | `-4` | `-4` | `-4` | `5` |
 
 Below, I've embedded an interactive JavaScript animation that was written by [Mostafa Abdelraouf](https://github.com/drdrsh) that implements the Needleman-Wunsch algorithm:
 {% include needleman.html %}
