@@ -1,0 +1,268 @@
+
+<style>
+  div.wrapper {
+    text-align: center;
+  }
+  div.cluster {
+    text-align: center;
+  }
+  .link {
+    stroke: #aaa;
+    stroke-width: 2px;
+  }
+
+  .node {
+    stroke: #fff;
+    stroke-width: 2px;
+  }
+  .textClass {
+    stroke: #323232;
+    font-family: "Lucida Grande", "Droid Sans", Arial, Helvetica, sans-serif;
+    font-weight: normal;
+    stroke-width: .5;
+    font-size: 14px;
+  }
+</style>
+
+
+<div id="wrapper">
+  <div id="cluster"></div>
+</div>
+
+
+<script src="/public/js/d3.v3.min.js"></script>
+<script src="/public/js/jquery.min.js"></script>
+
+<script>
+
+// adapted by @ArtPoon from http://bl.ocks.org/hugolpz/cd89b50d834828261b45af9e7a5ce926
+
+
+
+var graph;
+var vis;
+var data = {
+  "links": [
+    {'dist': 0.39, 'source': "A", 'target': "B"},
+    {'dist': 0.40, 'source': "B", 'target': "C"},
+    {'dist': 0.20, 'source': "A", 'target': "C"},
+    {'dist': 0.38, 'source': "C", 'target': "D"},
+  ], 
+  "nodes": [
+    {'id': "A", "group": "0", "geno": "R", "r": 0.134},
+    {'id': "B", "group": "0", "geno": "R", "r": 0.19},
+    {'id': "C", "group": "0", "geno": "S", "r": 0.308},
+    {'id': "D", "group": "0", "geno": "S", "r": 0.243}, 
+  ]
+};
+
+function myGraph() {
+    this.addNode = function(id, geno, r) {
+        nodes.push({"id": id, "geno": geno, "r": r})
+        update();
+    };
+
+    this.removeNode = function(id) {
+        var i = 0;
+        var n = this.findNode(id);
+        if (n == null) {
+            // no node with this 'id'
+            return;  // returns undefined
+        }
+
+        while (i < links.length) {
+            if ((links[i]['source'] == n) || (links[i]['target'] == n)) {
+                // remove links that connect to this node
+                links.splice(i, 1);
+            }
+            else i++;
+        }
+        nodes.splice(this.findNodeIndex(id), 1);
+        update();
+    };
+
+    this.removeLink = function (source, target) {
+        // remove directed edge between nodes with given IDs, if it exists
+        var link;
+        for (var i = 0; i < links.length; i++) {
+            link = links[i];
+            if (link.source.id == source && link.target.id == target) {
+                links.splice(i, 1);
+                break;
+            }
+        }
+        // if no matching edge, no big deal
+        update();
+    };
+
+    this.removeAllLinks = function () {
+        links.splice(0, links.length);
+        update();
+    };
+
+    this.removeAllNodes = function () {
+        nodes.splice(0, nodes.length);
+        update();
+    };
+
+    this.addLink = function(source, target, dist) {
+        /*
+            Add link object to [links] Array between nodes specified
+            by IDs.
+            @param source: ID of parent node
+            @param target: ID of child node
+            @param dist: distance attribute (float)
+         */
+        var node1 = this.findNode(source),
+            node2 = this.findNode(target);
+
+        if (node1 == null || node2 == null) {
+            return;  // do nothing
+        }
+        links.push({"source": node1, "target": node2, "dist": dist});
+        update();
+    };
+
+
+    /* accessor functions */
+    this.findNode = function(id) {
+        // search through Array of node objects and return the object
+        // with the requested (id)
+        for (var i in nodes) {  // for..in iterates over indices
+            if (nodes[i]["id"] === id) return nodes[i];
+        }
+        console.log("Warning: failed to retrieve node with id: "+id);
+        return null;
+    };
+
+    this.findNodeIndex = function(id) {
+        for (var i = 0; i < nodes.length; i++) {
+            if (nodes[i].id == id) {
+                return i;
+            }
+        }
+        console.log("Warning: failed to index node witih id: " + id);
+        return null;
+    };
+
+    // =================== set up d3 ===================
+    var w = 400,  // width
+        h = 300;  // height
+
+    var color = d3.scale.ordinal()
+        .domain(["S", "I", "R"])
+        .range(["#266A2E", "#FFA500", "#B22222"]);
+
+    vis = d3.select("div#cluster")
+                .append("svg:svg")
+                .attr("width", 500)
+                .attr("height", 500)
+                .attr("id", "mySvg")
+                .attr("pointer-events", "all")
+                .attr("viewBox", "0 0 " + w + " " + h)
+                .attr("perserveAspectRatio", "xMinYMid meet")
+                .append('svg:g');
+
+    // position linked nodes using physical simulation
+    var force = d3.layout.force();
+
+    var nodes = force.nodes(),
+        links = force.links();
+
+    var update = function() {
+        var link = vis.selectAll("line")
+                .data(links, function (d) {
+                    return d.source.id + "-" + d.target.id;
+                });
+
+        link.enter().append("line")
+            .attr("id", function (d) {
+                return d.source.id + '-' + d.target.id;
+            })
+            .attr("class", "link");
+        link.exit().remove();
+
+        var node = vis.selectAll("g.node")
+            .data(nodes, function(d) {
+                return d.id;
+            });
+
+        var nodeEnter = node.enter().append("g")
+            .attr("class", "node")
+            .call(force.drag);
+
+        nodeEnter.append("svg:circle")
+            .attr("r", function (d) { return 100*d.r; })
+            .attr("id", function (d) { return d.id; })
+            .attr("class", "nodeStrokeClass")
+            .attr("fill", function(d) { return color(d.geno); });
+
+        node.exit().remove();
+
+        force.on("tick", function() {
+            node.attr("transform", function (d) {
+                return "translate(" + d.x + "," + d.y + ")";
+            });
+
+            link.attr("x1", function(d) { return d.source.x; })
+                .attr("y1", function(d) { return d.source.y; })
+                .attr("x2", function(d) { return d.target.x; })
+                .attr("y2", function(d) { return d.target.y; });
+        });
+
+        // restart the force layout
+        force.charge(-500)
+             .linkDistance(function(d) {
+                return 200*d.dist;
+             })
+             .size([w, h])
+             .start();
+    };
+
+    update();  // go!
+}
+
+
+drawGraph("cluster");
+
+
+function drawGraph() {
+    graph = new myGraph();
+
+    for (var i = 0; i < data.nodes.length; i++) {
+        node = data.nodes[i];
+        if (node.group=="0") {
+            graph.addNode(node.id, node.geno, node.r);
+        }
+    }
+
+    for (var i = 0; i < data.links.length; i++) {
+        link = data.links[i];
+
+        for (var j = 0; j < data.nodes.length; j++) {
+            node = data.nodes[j];
+            if (node.id == link.source) {
+                node1 = node;
+            }
+            if (node.id == link.target) {
+                node2 = node;
+            }
+        }
+
+        if (node1.group=="0" && node2.group=="0") {
+            graph.addLink(link.source, link.target, link.dist);
+        }
+    }
+    keepNodesOnTop();
+}
+
+
+function keepNodesOnTop() {
+    $(".nodeStrokeClass").each(function( index ) {
+        var gnode = this.parentNode;
+        gnode.parentNode.appendChild(gnode);
+    });
+}
+
+</script>
+

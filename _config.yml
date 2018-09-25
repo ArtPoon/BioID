@@ -12,6 +12,7 @@ github_repo: http://github.com/ArtPoon/BioID
 
 # Build settings
 markdown: kramdown
+mathjax: true
 theme: minima
 plugins:
   - jekyll-feed

@@ -87,6 +87,8 @@ html {
 .sidebar-nowrap span {
   color: #fff;
   white-space: nowrap;
+  overflow: hidden;
+  display: inline-block;
 }
 
 /* Sidebar nav */

@@ -1,0 +1,58 @@
+
+<style>
+div.wrapper {
+  text-align: center;
+}
+div.example {
+  text-align: center;
+}
+</style>
+
+
+<div id="wrapper">
+  <div id="jukes-cantor"></div>
+</div>
+
+<script src="/public/js/d3.v3.min.js"></script>
+<script>
+
+var margin = {top: 20, right: 20, bottom: 30, left: 30},
+    width = 400 - margin.left - margin.right,
+    height = 400 - margin.top - margin.bottom;
+
+
+var svg = d3.select("div#jukes-cantor")
+          .append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+          .append("g")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");          
+
+
+
+// setup x 
+var xValue = function(d) { return d.time;}, // data -> value
+    xScale = d3.scale.linear().range([0, width]), // value -> display
+    xMap = function(d) { return xScale(xValue(d));}, // data -> display
+    xAxis = d3.svg.axis().scale(xScale).orient("bottom");
+
+// setup y
+var yValue = function(d) { return d.dist;}, // data -> value
+    yScale = d3.scale.linear().range([height, 0]), // value -> display
+    yMap = function(d) { return yScale(yValue(d));}, // data -> display
+    yAxis = d3.svg.axis().scale(yScale).orient("left");
+
+
+   
+svg.append("line")
+  .attr("x1", xScale(0))
+  .attr("y1", yScale(0))
+  .attr("x2", xScale(1))
+  .attr("y2", yScale(1))
+  .attr("stroke-width", 2)
+  .attr("stroke", "#ccc");
+
+
+</script>
+
+
