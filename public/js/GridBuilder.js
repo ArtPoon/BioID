@@ -167,7 +167,14 @@ var GridBuilder = (function () {
         //mDomAlignmentTable.width( mDomGridTable.width() );
 
         var score = 0;
+        
         var $tr = $('<tr />');
+        for (var idxSide in alignedSideSeq) {
+            $tr.append($('<td />').html(alignedSideSeq[idxSide]));
+        }
+        $table.append($tr);
+        
+        $tr = $('<tr />');
         for (var idxTop in alignedTopSeq) {
             var c1 = alignedTopSeq[idxTop];
             var c2 = alignedSideSeq[idxTop];
@@ -183,12 +190,6 @@ var GridBuilder = (function () {
                 score += mMismatchScore;
             }
             $tr.append($('<td />').html(c1));
-        }
-        $table.append($tr);
-
-        $tr = $('<tr />');
-        for (var idxSide in alignedSideSeq) {
-            $tr.append($('<td />').html(alignedSideSeq[idxSide]));
         }
         $table.append($tr);
 
@@ -252,7 +253,7 @@ var GridBuilder = (function () {
         var targetDom = $('#' + x + '_' + y);
         var pos = targetDom.offset();
         targetDom.addClass('highlight-main');
-        displayTooltip($table, pos.left + targetDom.width() + 10, pos.top - targetDom.height() / 2);
+        //displayTooltip($table, pos.left + targetDom.width() + 10, pos.top - targetDom.height() / 2);
     }
 
     function getCssClassesFromDirection(directions) {
