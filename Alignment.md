@@ -67,7 +67,8 @@ Let's denote the length of a gap by $$l$$.
 The linear gap penalty is simply the product $$-ld$$, where $$d$$ is some constant 'per-gap' penalty.
 A slightly more complex approach is the affine gap penalty, where we make a distinction between the cost of adding the first gap (the *gap open penalty*) and the cost for each additional gap (the *gap extension penalty*). 
 Using $$d$$ and $$e$$ to refer to these respective penalties, the affine penalty is given by the formula $$-d-(l-1)e$$.
-Usually one sets $$e<d$$.
+Usually one sets *e*<*d*.
+
 
 #### Scoring and traceback
 
@@ -88,7 +89,7 @@ $$
 
 $$x_i$$ is the *i*-th residue in sequence *x*, $$y_j$$ is the *j*-th residue in sequence *y*, and *s* is our score matrix.
 $$F(i,j)$$ represents the alignment score for the partial sequences up to positions *i* and *j*, respectively.
-*F* is undefined for $$i<0$$ or $$j<0$$, and we simply drop these cases from the above formula.
+*F* is undefined for *i*<`0` or *j*<`0`, and we simply drop these cases from the above formula.
 In other words, we are gradually building up the total alignment score from shorter alignments (this is where the dynamic programming comes in).
 
 While we're filling out the *F* matrix, we have to keep track of which case gave the maximum value at each point.
@@ -103,6 +104,12 @@ You can also click on *Custom Path* and enter your own traceback to make a subop
 
 
 #### Local and global alignment
+
+The Needleman-Wunsch method is a global alignment algorithm - it aligns the sequences end-to-end, so that both sequences have at least one residue at the extreme left and right of the alignment.
+This greatly simplifies the problem of aligning sequences, but it is not appropriate for all situations.
+For example, what happens if we want to align two sequences where one sequence is much shorter than the other, not because of many deletions but because we didn't sequence the entire target (*e.g.*, gene)?
+We can adjust for this by allowing the alignment to add terminal gap penalties at no cost.
+
 Terminal gap penalties are applied to gaps that occur at the extreme left or extreme right of a sequence in the alignment.
 For example, the alignment on the left contains terminal gaps, but the alignment on the right does not:
 ```
@@ -115,6 +122,11 @@ Otherwise, we may end up scattering fragments of the shorter sequence across the
 A----C-----G
 ATGCACGTTATG
 ```
+
+The most well known algorithm for generating a local pairwise alignment is the [Smith-Waterman algorithm](https://en.wikipedia.org/wiki/Smith%E2%80%93Waterman_algorithm). 
+It is derived from the Needleman-Wunsch algorithm but it is more complex to calculate, in part because the start and end points of the alignment are no longer constrained to the lower-right and upper-left corners of the matrix.
+The sequence alignment programs that we use today generally implement some offshoot of the Smith-Waterman algorithm, with refinements to optimize the speed of calculation or output multiple alignments when there are multiple solutions with the same alignment score.
+
 
 
 ### Multiple sequence alignment
@@ -136,12 +148,41 @@ and next we're going to naively stack these pairwise alignments together:
 ```
 Clearly, sequence (3) is not aligned with (1) and (2).
 
+There is an enormous number of possible MSAs, and it is essentially impossible to reconstruct the "correct" MSA with a high degree of confidence.
+To quote from Richard Durbin *et al.* (2005):
+> .... we must keep in mind that there is no objective way to define an unambiguously correct alignment. [...] Asking a sequence alignment program to produce *exactly* the same alignment... means building in the same meaningless biases about how to 'align' structurally unalignable regions.
+
+
+#### Guide trees
+
+Most methods for generating an MSA use a progressive alignment heurstic, where the problem is broken down into a series of pairwise alignments.
+We are then faced with the problem of how to selct pairs of sequences from the data set.
+The most common approach to resolving this problem is to use a binary *guide tree*.
+A binary tree is a tree where each split results in no more than two branches.
+Usually, building a tree from a set of sequences requires that those sequences are aligned, which seems like a [chicken-and-egg problem](https://en.wikipedia.org/wiki/Chicken_or_the_egg).
+One solution is to build all possible pairwise alignments to calculate the [genetic distances]() and then run a clustering method such as [neighbor-joining]() on the resulting distance matrix - this is the approach taken by the program [CLUSTALW](https://en.wikipedia.org/wiki/Clustal#ClustalW).
+However, performing all these pairwise alignments just to generate a guide tree is really ineffiocient!
+Instead, more recent alignment programs tend to make use of [alignment-free distances](Clustering.html#alignment-free-distances)) to avoid this lengthy process.
+
+
+#### Iterative alignment
+
+The use of a guide tree to determine the order of pairwise alignments in a progressive alignment algorithm suggests that we could take the resulting MSA and then use it to make a better guide tree!
+This is an old idea - one of the earliest studies to use this approach was published in [1987](https://www.sciencedirect.com/science/article/pii/0022283687903160)) - and iterative refinement of an alignment is now employed in several modern alignment programs, such as [MUSCLE](https://www.drive5.com/muscle/) (see next section).
+For example, this approach plays a central role in the program SAT&eacute;, which iteratively uses a maximum likelihood tree reconstruction as the guide tree for the next alignment.
 
 
 ### Alignment programs
 
+| Name | Year | URL | Description |
+|------|------|-----|-------------|
+| CLUSTALW | [1994](https://academic.oup.com/nar/article-abstract/22/22/4673/2400290) | http://www.clustal.org/clustal2/ | One of the first MSA programs to achieve widespread popularity. Compared to more recent programs, CLUSTALW is the least accurate. |
+| T-coffee | [2000](https://www.sciencedirect.com/science/article/pii/S0022283600940427) | http://www.tcoffee.org/Projects/tcoffee/ | Like CLUSTALW, T-coffee initially performs pairwise alignments of the sequences, but uses a mix of local and global alignments. |
+| MAFFT | 
 
-## Readings
-* Durbin R, Eddy SR, Krogh A, Mitchison G. Biological sequence analysis: probabilistic models of proteins and nucleic acids. Cambridge University Press; 1998 Apr 23.
+
+## Further readings
+
+* Durbin R, Eddy SR, Krogh A, Mitchison G. *Biological sequence analysis: probabilistic models of proteins and nucleic acids.* Cambridge University Press; 2005 (8th printing).
 
 
