@@ -174,15 +174,22 @@ For example, this approach plays a central role in the program SAT&eacute;, whic
 
 ### Alignment programs
 
-| Name | Year | URL | Description |
-|------|------|-----|-------------|
-| CLUSTALW | [1994](https://academic.oup.com/nar/article-abstract/22/22/4673/2400290) | http://www.clustal.org/clustal2/ | One of the first MSA programs to achieve widespread popularity. Compared to more recent programs, CLUSTALW is the least accurate. |
-| T-coffee | [2000](https://www.sciencedirect.com/science/article/pii/S0022283600940427) | http://www.tcoffee.org/Projects/tcoffee/ | Like CLUSTALW, T-coffee initially performs pairwise alignments of the sequences, but uses a mix of local and global alignments. |
-| MAFFT | 
+This table briefly summarizes a number of open-source or freeware programs for generating an MSA from a set of homologous sequences.
+You can click on the program name to follow the link to the program's official webpage where binaries or source code may be downloaded.
+The release year is based on the earliest publication associated with the software.
+
+| Name | Release year | Description |
+|------|-------|-------------|
+| [CLUSTALW](http://www.clustal.org/clustal2/) | [1994](https://academic.oup.com/nar/article-abstract/22/22/4673/2400290) | One of the first MSA programs to achieve widespread popularity. Compared to more recent programs, CLUSTALW is the least accurate. |
+| [T-coffee](http://www.tcoffee.org/Projects/tcoffee/) | [2000](https://www.sciencedirect.com/science/article/pii/S0022283600940427) | Like CLUSTALW, T-coffee initially performs pairwise alignments of the sequences, but uses a mix of local and global alignments. |
+| [MAFFT](https://mafft.cbrc.jp/alignment/software/) | [2002](https://academic.oup.com/nar/article/30/14/3059/2904316) | MAFFT uses a fast Fourier transform to identify homologous regions between sequences. A [Fourier transform](https://en.wikipedia.org/wiki/Fourier_transform) on a nucleotide sequence is a technique where the sequence is transformed into a set of four binary vectors for each nucleotide, and we calculate the number of matches for each vector from two sequences, where one vector is offset by some amount *k*. |
+| [MUSCLE](https://www.drive5.com/muscle/) | [2004](https://academic.oup.com/nar/article/32/5/1792/2380623) | MUSCLE uses an alignment-free *k*-mer based distance to generate a guide tree, and iteratively refines the alignment by partitioning the tree into subtrees. |
+| [BAli-Phy](http://www.bali-phy.org/) | [2006](https://academic.oup.com/bioinformatics/article/22/16/2047/207824) | As software names go, "BAli-Phy" is not your traditional abbreviation. Instead it underscores the key points, in that it uses Bayesian sampling to jointly estimate the alignment and the phylogeny.  We nearly always assume the alignment is a known, fixed quantity when reconstructing the phylogeny.  BAli-Phy takes the extraordinary step of inferring the alignment and the tree *at the same time* - in a sense, it is taking the concept of iterative alignment to its logical conclusion.  This approach is computationally challenging and I would not expect to be able to run this program on many more than 100 sequences, although recent publications have evidently done so. |
+| [PRANK](http://wasabiapp.org/software/prank/) | [2008](http://science.sciencemag.org/content/320/5883/1632) | PRANK takes an innovative approach to the placement of gaps in the MSA, recognizing that sequence insertions usually lack evolutionary homology to other insertions. Put another way, think about this question: where does an insertion come from?  Is there any reason why two insertions, which are distinct (independent) evolutionary events, share a common ancestor?  In my experience, PRANK tends to spread insertions out to such an extreme that the resulting alignment becomes a sparse scaffold of isolated insertions. |
 
 
 ## Further readings
 
 * Durbin R, Eddy SR, Krogh A, Mitchison G. *Biological sequence analysis: probabilistic models of proteins and nucleic acids.* Cambridge University Press; 2005 (8th printing).
-
+* Thompson JD, Linard B, Lecompte O, Poch O. *A comprehensive benchmark study of multiple sequence alignment methods: current challenges and future perspectives.* PLoS ONE. 2011 Mar 31;6(3):e18093.
 
