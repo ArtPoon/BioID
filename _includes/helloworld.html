@@ -1,0 +1,123 @@
+<style>
+.tree-selection-brush .extent {
+    fill-opacity: .05;
+    stroke: #fff;
+    shape-rendering: crispEdges;
+}
+
+.tree-scale-bar text {
+  font: sans-serif;
+}
+
+.tree-scale-bar line,
+.tree-scale-bar path {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.node circle, .node ellipse, .node rect {
+fill: steelblue;
+stroke: black;
+stroke-width: 0.5px;
+}
+
+.internal-node circle, .internal-node ellipse, .internal-node rect{
+fill: #CCC;
+stroke: black;
+stroke-width: 0.5px;
+}
+
+.node {
+font: 10px sans-serif;
+}
+
+.node-selected {
+fill: #f00 !important;     
+}
+
+.node-collapsed circle, .node-collapsed ellipse, .node-collapsed rect{
+fill: black !important;     
+}
+
+.node-tagged {
+fill: #00f; 
+}
+
+.branch {
+fill: none;
+stroke: #999;
+stroke-width: 2px;
+}
+
+.clade {
+fill: #1f77b4;
+stroke: #444;
+stroke-width: 2px;
+opacity: 0.5;
+}
+
+.branch-selected {
+stroke: #f00 !important; 
+stroke-width: 3px;
+}
+
+.branch-tagged {
+stroke: #00f;
+stroke-dasharray: 10,5;
+stroke-width: 2px;
+}
+
+.branch-tracer {
+stroke: #bbb;
+stroke-dasharray: 3,4;
+stroke-width: 1px;
+}
+
+
+.branch-multiple {
+stroke-dasharray: 5, 5, 1, 5;
+stroke-width: 3px;
+}
+
+.branch:hover {
+stroke-width: 10px;
+}
+
+.internal-node circle:hover, .internal-node ellipse:hover, .internal-node rect:hover {
+fill: black;
+stroke: #CCC;
+}
+
+.tree-widget {
+}
+
+</style>
+
+  <script src="/public/js/d3.v3.min.js"></script>
+  <script src="/public/js/phylotree.js"></script>
+  <script src="/public/js/underscore-min.js" charset="utf-8"></script>
+
+
+  <svg id="tree_display" />
+
+  <script>
+    var example_tree = "(((EELA:0.150276,CONGERA:0.213019):0.230956,(EELB:0.263487,CONGERB:0.202633):0.246917):0.094785,((CAVEFISH:0.451027,(GOLDFISH:0.340495,ZEBRAFISH:0.390163):0.220565):0.067778,((((((NSAM:0.008113,NARG:0.014065):0.052991,SPUN:0.061003,(SMIC:0.027806,SDIA:0.015298,SXAN:0.046873):0.046977):0.009822,(NAUR:0.081298,(SSPI:0.023876,STIE:0.013652):0.058179):0.091775):0.073346,(MVIO:0.012271,MBER:0.039798):0.178835):0.147992,((BFNKILLIFISH:0.317455,(ONIL:0.029217,XCAU:0.084388):0.201166):0.055908,THORNYHEAD:0.252481):0.061905):0.157214,LAMPFISH:0.717196,((SCABBARDA:0.189684,SCABBARDB:0.362015):0.282263,((VIPERFISH:0.318217,BLACKDRAGON:0.109912):0.123642,LOOSEJAW:0.397100):0.287152):0.140663):0.206729):0.222485,(COELACANTH:0.558103,((CLAWEDFROG:0.441842,SALAMANDER:0.299607):0.135307,((CHAMELEON:0.771665,((PIGEON:0.150909,CHICKEN:0.172733):0.082163,ZEBRAFINCH:0.099172):0.272338):0.014055,((BOVINE:0.167569,DOLPHIN:0.157450):0.104783,ELEPHANT:0.166557):0.367205):0.050892):0.114731):0.295021)"
+    // tree from Yokoyama et al http://www.ncbi.nlm.nih.gov/pubmed/18768804
+
+
+    var tree = d3.layout.phylotree()
+      // create a tree layout object
+      .svg(d3.select("#tree_display"));
+    // render to this SVG element
+
+    tree(example_tree)
+      .options({"align-tips": false})
+      // parse the Newick into a d3 hierarchy object with additional fields
+      .layout();
+    // layout and render the tree
+
+
+  </script>
+
+
