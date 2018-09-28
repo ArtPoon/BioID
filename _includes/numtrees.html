@@ -1,0 +1,30 @@
+<form>
+  <label>Number of tips</label>
+  <input type="number" id="ntips_input" value="3" min="3" max="100">
+  <br/>
+  <label>Number of unrooted binary trees: </label><output name="nu" id="nu_output">1</output>
+  <br/>
+  <label>Number of rooted binary trees: </label><output name="nr" id="nr_output">3</output>
+</form>
+
+<script>
+function fact(n) {
+  if (n<0) return undefined;
+  var result = 1;
+  for (var i = 2; i <= n; i++) {
+    result = result * i;
+  }
+  return result;
+}
+
+
+$("#ntips_input").bind("input", function() {
+  //console.log(this.value);
+  var n=this.value;
+  //console.log(n);
+  var num_unroot = fact(2*n-4) / (fact(n-2)*Math.pow(2,n-2));
+  $("#nu_output").val(num_unroot);
+  $("#nr_output").val(num_unroot * (2*n-3));
+})
+.trigger('input');
+</script>

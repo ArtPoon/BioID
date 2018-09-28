@@ -33,11 +33,29 @@ This juncture is called an *ancestral node* or a *split*.
 Eventually, we reach the deepest node in the tree that may represent the most recent common ancestor or *root*. 
 However, a tree may be unrooted so that the meaning of the deepest node is more ambiguous (more on this later).
 
-If there are always exactly two branches that descend from every ancestral node in the tree, then we say that it is a *binary* or *bifurcating* tree.
-We make the implicit assumption that the biological process underlying splits in the tree, *e.g.,* speciation or transmission, 
+The branches of the tree may be dimensionless, so that they contain no other information than the hypothesis that two nodes are directly related as an ancestor and descendant pair.
+Since length is meaningless in this case, we usually draw the branches with integer lengths that are consistent with their ancestral node's [height](https://en.wikipedia.org/wiki/Node_(computer_science)) in the tree, where the height is the largest number of nodes (including this ancestor) along the path to one of its descendant tips.
+Such a tree is called a *cladogram* or simply an "unscaled" tree.
 
 {% include helloworld.html %}
 
+
+## Counting trees
+
+Even if we only consider unscaled trees, the number of trees that can relate a given number of tips is enormous!
+For just 10 tips, there are already over 2 million possible unrooted binary trees, and 17 times as many rooted trees (an unrooted binary tree with 10 tips has 17 branches).
+Try changing the number of tips in this calculator to see how the numbers of different types of trees grows:
+{% include numtrees.html %}
+
+When we are dealing with inconceivably large numbers such as these, we often start turning to rough analogies such as "the number of grains of sand on planet Earth" (about 7&times;10<sup>18</sup>, or about 19 tips) or "the number of atoms in the universe" (roughly 10<sup>80</sup>, or about 52 tips). 
+Think about this: nowadays, we routinely work with trees that have 10,000 tips or more!
+
+## Polytomies
+
+If there are always exactly two branches that descend from every ancestral node in the tree, then we say that it is a *binary* or *bifurcating* tree.
+We make the implicit assumption that the biological process underlying splits in the tree, *e.g.,* speciation or transmission, is not so rapid that two events occur at the same instant in time.
+For example, rapid speciation could theoretically result in more than two child branches from an ancestral node.
+On the other hand, we might not have enough data to 
 
 ## Further readings
 
