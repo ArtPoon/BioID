@@ -69,10 +69,53 @@ Otherwise, we assume that it is a *hard* polytomy that represents a genuinely mu
 How can we determine whether two sequences are related by a more recent common ancestor than another pair? 
 Since we usually cannot directly observe the descent of populations from ancestors, we have to infer the order of events from the pattern of similarity among the populations that we *can* directly observe. 
 As we learned in a [previous chapter](Clustering.html#genetic-distances), there are many ways of measuring how different two sequences are using a genetic distance function, and similarity is simply the opposite of distance. 
+By applying the distance function to every pair of sequences in our data set, we can generate a symmetrical, square matrix that we call a *pairwise distance matrix*.
+
+Trees are often used as a [graphical representation](https://en.wikipedia.org/wiki/Dendrogram) of a pairwise distance matrix.
+In this application, a tree is usually an approximate representation because it frequently impossible for the total branch lengths between tips in the tree to be proportional to the correpsonding distances.
+Suppose, for example, we have the following distance matrix:
+
+|  | A | B | C |
+|--|---|---|---|
+| A | 0 | 0.1 | 0.2 |
+| B | 0.1 | 0 | 0.31 |
+| C | 0.2 | 0.31 | 0 |
+
+This matrix indicates that **A** and **B** are the most closely related sequences, so they should be the first tips to be joined by branches to a common ancestor.
+This implies the following rooted tree topology (ignoring branch lengths for now):
+
+<center>
+<img src="/public/img/simple-tree.svg"/>
+</center>
+
+However, if we want the branch lengths in the tree to be congruent to the distances, then we are in a bind! 
+I deliberate chose pairwise distances that makes this impossible. 
+This highly simplified scenario could arise if, for example, we have the following sequences:
+```
+>A 
+ACGT...
+>B 
+ACAT...
+>C 
+GCCT...
+```
+and transversions between `A` and `C` are disproportionately rare.
+
+There are several clustering algorithms that can be used to transform a distance matrix into a tree.
+Rather than review a selection of these algorithms, I am only going to talk about the algorithm that is the most widely used today: neighbor-joining.
+
+### Neighbor-joining trees
+
+The neighbor-joining (NJ) method was introduced by Saitou and Nei in 1987.
 
 
+## Likelihood
 
 
+## Maximum likelihood trees
+
+
+## Software
 
 
 ## Further readings
