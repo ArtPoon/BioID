@@ -13,7 +13,7 @@
 
   .textClass {
     stroke: #323232;
-    font-family: "Lucida Grande", "Droid Sans", Arial, Helvetica, sans-serif;
+    font-family: "Cabin", "Droid Sans", Arial, Helvetica, sans-serif;
     font-weight: normal;
     stroke-width: .5;
     font-size: 14px;
@@ -22,6 +22,9 @@
 
 
 <div id="wrapper">
+  <input type="button" value="Down" onclick="prevStage()"/>
+  <input type="button" value="Up" onclick="nextStage()"/>
+  <output id="stage_display">0</output>
   <div id="njtree"></div>
 </div>
 
@@ -112,7 +115,8 @@ function myGraph() {
         var link;
         for (var i = 0; i < links.length; i++) {
             link = links[i];
-            if (link.source.id == source && link.target.id == target) {
+            if ((link.source.id == source && link.target.id == target) || 
+                (link.source.id == target && link.target.id == source)) {
                 links.splice(i, 1);
                 break;
             }
@@ -262,6 +266,46 @@ for (var i = 0; i < data.links.length; i++) {
 keepNodesOnTop();
 
 
+var ancestors = ["A-B", "E-F", "AB-C", "ABC-D", "ABCD-EF"];
+
+var transitions = {
+  1: {"remove": [{"source": "A", "target": "root", "dist": 0.5},
+              {"source": "B", "target": "root", "dist": 0.5}],
+      "add": [{"source": "A", "target": "A-B", "dist": 0.1},
+              {"source": "B", "target": "A-B", "dist": 0.1},
+              {"source": "A-B", "target": "root", "dist": 0.1}]},
+              
+  2:  {"remove": [{"source": "E", "target": "root", "dist": 0.5},
+              {"source": "F", "target": "root", "dist": 0.5}],
+      "add": [{"source": "E", "target": "E-F", "dist": 0.1},
+              {"source": "F", "target": "E-F", "dist": 0.1},
+              {"source": "E-F", "target": "root", "dist": 0.1}]},
+              
+  3: {"remove": [{"source": "A-B", "target": "root", "dist": 0.5},
+              {"source": "C", "target": "root", "dist": 0.5}],
+      "add": [{"source": "A-B", "target": "AB-C", "dist": 0.1},
+              {"source": "C", "target": "AB-C", "dist": 0.1},
+              {"source": "AB-C", "target": "root", "dist": 0.1}]},
+              
+  4: {"remove": [{"source": "AB-C", "target": "root", "dist": 0.5},
+              {"source": "D", "target": "root", "dist": 0.5}],
+      "add": [{"source": "AB-C", "target": "ABC-D", "dist": 0.1},
+              {"source": "D", "target": "ABC-D", "dist": 0.1},
+              {"source": "ABC-D", "target": "root", "dist": 0.1}]},
+              
+  5: {"remove": [{"source": "ABC-D", "target": "root", "dist": 0.5},
+              {"source": "E-F", "target": "root", "dist": 0.5}],
+      "add": [{"source": "ABC-D", "target": "ABCD-EF", "dist": 0.1},
+              {"source": "E-F", "target": "ABCD-EF", "dist": 0.1},
+              {"source": "ABCD-EF", "target": "root", "dist": 0.1}]}
+};
+
+var stage = 0,
+    removes,
+    adds,
+    t;
+
+
 function keepNodesOnTop() {
     $(".nodeStrokeClass").each(function( index ) {
         var gnode = this.parentNode;
@@ -269,8 +313,50 @@ function keepNodesOnTop() {
     });
 }
 
-//TODO: add buttons to add and remove nodes as per NJ
 
+function prevStage() {
+  //console.log('prevStage');
+  if (stage > 0) {
+    graph.removeNode(ancestors[stage]);
+    
+    // reverse order of operations
+    adds = transitions[stage]["remove"];
+    for (var i=0; i<adds.length; i++) {
+      t = adds[i];
+      graph.addLink(t.source, t.target, t.dist);
+    }
+    // no need to remove links, since we killed the node
+    
+    stage = stage-1;
+  }
+  $("#stage_display").val(stage);
+  keepNodesOnTop();
+}
+
+function nextStage() {
+  //console.log('nextStage');
+  if (stage < 5) {
+    stage = stage + 1;
+    graph.addNode(ancestors[stage], 0.1);
+    
+    adds = transitions[stage]["add"];
+    for (var i = 0; i<adds.length; i++) {
+      t = adds[i];
+      graph.addLink(t.source, t.target, t.dist);
+    }
+    removes = transitions[stage]["remove"];
+    for (var i = 0; i<removes.length; i++) {
+      t = removes[i];
+      graph.removeLink(t.source, t.target);
+    }
+  }
+  $("#stage_display").val(stage);
+  keepNodesOnTop();
+}
 
 </script>
+
+
+
+
 
