@@ -102,12 +102,16 @@ GCCT...
 and transversions between `A` and `C` are disproportionately rare.
 
 There are several clustering algorithms that can be used to transform a distance matrix into a tree.
-Rather than review a selection of these algorithms, I am only going to talk about the algorithm that is the most widely used today: neighbor-joining.
+Rather than review a selection of these algorithms, I am only going to talk about the clustering algorithm that is the most widely used today: neighbor-joining.
+
 
 ### Neighbor-joining trees
 
-The neighbor-joining (NJ) method was introduced by Saitou and Nei in 1987.
+The neighbor-joining (NJ) method was introduced by [Saitou and Nei](https://academic.oup.com/mbe/article/4/4/406/1029664) in 1987.
+This method starts with a star phylogeny, where every sequence in the data set is directly descended from the same single common ancestor (so it literally looks like a tree!).
+The objective of the subsequent steps is to progressively add ancestral nodes in such a way that minimizes the total branch length of the tree.
 
+{% include njtree.html %}
 
 ## Likelihood
 
