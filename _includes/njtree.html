@@ -31,6 +31,7 @@
 
 <script src="/public/js/d3.v3.min.js"></script>
 <script src="/public/js/jquery.min.js"></script>
+<!--<script src="/public/js/math.min.js"></script>-->
 
 <script>
 
@@ -237,43 +238,29 @@ var update = function() {
 
 
 // initialize graph
-/*
-graph = new myGraph();
-for (var i = 0; i < data.nodes.length; i++) {
-    node = data.nodes[i];
-    if (node.group=="0") {
-        graph.addNode(node.id, node.r);
-    }
-}
-for (var i = 0; i < data.links.length; i++) {
-    link = data.links[i];
-    graph.addLink(link.source, link.target, link.dist);    
-}
-keepNodesOnTop();
-*/
-
 var csvdata,
     headers,
-    dists,
-    u;
-    
+    node_names,
+    dists, orig_dists;
+
 d3.text("/data/nj-example.csv").get(function(error, rows) {
   csvdata = d3.csv.parseRows(rows);
   headers = csvdata[0];
-  var n=headers.length;
+  var n = headers.length;
+  node_names = headers.slice(1, n);
   
   if (csvdata.length != n) {
     console.warn("Not a square matrix!");
   }
   
   // convert array into Object
-  dists = {};
+  dists = Array(n-1);
+  orig_dists = Array(n-1);  // deep copy
   for (var i=1; i < n; i++) {
-    k1 = headers[i];
-    dists[k1] = {};
+    dists[i-1] = Array(n-1);
+    orig_dists[i-1] = Array(n-1);
     for (var j=1; j < n; j++) {
-      k2 = headers[j];
-      dists[k1][k2] = +csvdata[i][j];
+      orig_dists[i-1][j-1] = dists[i-1][j-1] = +csvdata[i][j];
     }
   }
   
@@ -286,19 +273,10 @@ d3.text("/data/nj-example.csv").get(function(error, rows) {
     // TODO: make these edges a fainter color
   }
   keepNodesOnTop();
-  
-  // initialize matrix
-  u = Array(n);
-  for (var i=1; i<n; i++) {
-    var sum=0;
-    for (var j=1; j<n; j++) {
-      if (j==i) { continue; }
-      sum += +csvdata[i][j];
-    }
-    u[i] = sum/(n-2);
-    //mx[i] /= (n-2);
-  }
 });
+
+
+
 
 
 
@@ -369,9 +347,74 @@ function prevStage() {
   keepNodesOnTop();
 }
 
+
+function njoin() {
+    var n = dists.length;
+    
+    // compute u
+    var u = Array(n);
+    for (var i=0; i<n; i++) {
+      var sum=0;
+      for (var j=0; j<n; j++) {
+        if (j==i) { continue; }
+        sum += dists[i][j];
+      }
+      u[i] = sum/(n-2);  // zero-indexing for vector
+    }
+    
+    // choose i,j that minimizes D(i,j)-u(i)-u(j)
+    var min_i, min_j, val, min_value = Infinity;
+    for (var i=0; i<n; i++) {
+      for (var j=i+1; j<n; j++) {
+        val = dists[i][j] - u[i] - u[j];
+        if (val < min_value) {
+          min_value = val;
+          min_i = i;
+          min_j = j;
+        }
+      }
+    }
+    
+    // calculate branch lengths of (i) and (j) to new node
+    var v_i = dists[min_i][min_j]/2 + (u[min_i]-u[min_j])/2,
+        v_j = dists[min_i][min_j]/2 + (u[min_j]-u[min_i])/2;
+    
+    return {'i': min_i, 'j': min_j, 'v_i': v_i, 'v_j': v_j};
+}
+
+function update_dists(i, j) {
+  var n = dists.length;
+  var new_row = Array(n);
+  
+  // calculate distance from new node (ij) to remaining nodes
+  for (var k = 0; k<n; k++) {
+    if (k==i || k==j) {
+      continue;
+    }
+    new_row[k] = (dists[i][k] + dists[j][k] - dists[i][j]) / 2;
+    dists[k].push(new_row[k]);
+  }
+  dists.push(new_row);  // fixme: append 0
+  
+  // delete i and j from array
+  if (i > j) {
+    dists.splice(i,1);
+    dists.splice(j,1);
+  } else {
+    dists.splice(j,1);
+    dists.splice(i,1);
+  }
+}
+
+
 function nextStage() {
   //console.log('nextStage');
   if (stage < 5) {
+    neighbors = njoin();
+    new_node = node_names[neighbors.i] + node_names[neighbors.j];
+    
+    // append to ancestors vector (for reversal)
+  
     graph.addNode(ancestors[stage], 0.1); // ancestors is 0-indexed
     stage = stage + 1;
     
