@@ -236,32 +236,17 @@ var update = function() {
 
 
 
-
+// initialize graph
 graph = new myGraph();
-
 for (var i = 0; i < data.nodes.length; i++) {
     node = data.nodes[i];
     if (node.group=="0") {
         graph.addNode(node.id, node.r);
     }
 }
-
 for (var i = 0; i < data.links.length; i++) {
     link = data.links[i];
-
-    for (var j = 0; j < data.nodes.length; j++) {
-        node = data.nodes[j];
-        if (node.id == link.source) {
-            node1 = node;
-        }
-        if (node.id == link.target) {
-            node2 = node;
-        }
-    }
-
-    if (node1.group=="0" && node2.group=="0") {
-        graph.addLink(link.source, link.target, link.dist);
-    }
+    graph.addLink(link.source, link.target, link.dist);    
 }
 keepNodesOnTop();
 
@@ -317,17 +302,17 @@ function keepNodesOnTop() {
 function prevStage() {
   //console.log('prevStage');
   if (stage > 0) {
+    stage = stage-1;
     graph.removeNode(ancestors[stage]);
     
     // reverse order of operations
-    adds = transitions[stage]["remove"];
+    adds = transitions[stage+1]["remove"];
     for (var i=0; i<adds.length; i++) {
       t = adds[i];
       graph.addLink(t.source, t.target, t.dist);
     }
     // no need to remove links, since we killed the node
     
-    stage = stage-1;
   }
   $("#stage_display").val(stage);
   keepNodesOnTop();
@@ -336,8 +321,8 @@ function prevStage() {
 function nextStage() {
   //console.log('nextStage');
   if (stage < 5) {
+    graph.addNode(ancestors[stage], 0.1); // ancestors is 0-indexed
     stage = stage + 1;
-    graph.addNode(ancestors[stage], 0.1);
     
     adds = transitions[stage]["add"];
     for (var i = 0; i<adds.length; i++) {
