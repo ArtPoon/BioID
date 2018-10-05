@@ -237,6 +237,7 @@ var update = function() {
 
 
 // initialize graph
+/*
 graph = new myGraph();
 for (var i = 0; i < data.nodes.length; i++) {
     node = data.nodes[i];
@@ -249,6 +250,56 @@ for (var i = 0; i < data.links.length; i++) {
     graph.addLink(link.source, link.target, link.dist);    
 }
 keepNodesOnTop();
+*/
+
+var csvdata,
+    headers,
+    dists,
+    u;
+    
+d3.text("/data/nj-example.csv").get(function(error, rows) {
+  csvdata = d3.csv.parseRows(rows);
+  headers = csvdata[0];
+  var n=headers.length;
+  
+  if (csvdata.length != n) {
+    console.warn("Not a square matrix!");
+  }
+  
+  // convert array into Object
+  dists = {};
+  for (var i=1; i < n; i++) {
+    k1 = headers[i];
+    dists[k1] = {};
+    for (var j=1; j < n; j++) {
+      k2 = headers[j];
+      dists[k1][k2] = +csvdata[i][j];
+    }
+  }
+  
+  // initialize graph
+  graph = new myGraph();
+  graph.addNode("root", 0.1);
+  for (var i=1; i<n; i++) {
+    graph.addNode(headers[i], 0.1);
+    graph.addLink(headers[i], "root", 0.5);
+    // TODO: make these edges a fainter color
+  }
+  keepNodesOnTop();
+  
+  // initialize matrix
+  u = Array(n);
+  for (var i=1; i<n; i++) {
+    var sum=0;
+    for (var j=1; j<n; j++) {
+      if (j==i) { continue; }
+      sum += +csvdata[i][j];
+    }
+    u[i] = sum/(n-2);
+    //mx[i] /= (n-2);
+  }
+});
+
 
 
 var ancestors = ["A-B", "E-F", "AB-C", "ABC-D", "ABCD-EF"];
