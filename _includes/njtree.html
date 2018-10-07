@@ -1,3 +1,4 @@
+<!-- author @ArtPoon -->
 
 <style>
   div.wrapper {
@@ -22,9 +23,9 @@
 
 
 <div id="wrapper">
-  <input type="button" value="Down" onclick="prevStage()"/>
-  <input type="button" value="Up" onclick="nextStage()"/>
-  <output id="stage_display">0</output>
+  <div id="csvtable"></div>
+  <input type="button" id="reset_btn" value="Reset" onclick="reset()"/>
+  <input type="button" id="step_btn" value="Step!" onclick="nextStage()"/>
   <div id="njtree"></div>
 </div>
 
@@ -35,7 +36,7 @@
 
 <script>
 
-// adapted by @ArtPoon from http://bl.ocks.org/hugolpz/cd89b50d834828261b45af9e7a5ce926
+
 
 
 var w = 600,  // width
@@ -57,36 +58,14 @@ var force = d3.layout.force();
 
 var nodes = force.nodes(),
     links = force.links();
-        
-var graph;
-//var vis;
-var data = {
-  "links": [
-    {'dist': 0.5, 'source': "root", 'target': "A"},
-    {'dist': 0.5, 'source': "root", 'target': "B"},
-    {'dist': 0.5, 'source': "root", 'target': "C"},
-    {'dist': 0.5, 'source': "root", 'target': "D"},
-    {'dist': 0.5, 'source': "root", 'target': "E"},
-    {'dist': 0.5, 'source': "root", 'target': "F"},
-    {'dist': 0.5, 'source': "root", 'target': "G"},
-    {'dist': 0.5, 'source': "root", 'target': "H"},
-  ], 
-  "nodes": [
-    {'id': "root", "group": "0", "r": 0.1}, 
-    {'id': "A", "group": "0", "r": 0.1},
-    {'id': "B", "group": "0", "r": 0.1},
-    {'id': "C", "group": "0", "r": 0.1},
-    {'id': "D", "group": "0", "r": 0.1}, 
-    {'id': "E", "group": "0", "r": 0.1}, 
-    {'id': "F", "group": "0", "r": 0.1}, 
-    {'id': "G", "group": "0", "r": 0.1}, 
-    {'id': "H", "group": "0", "r": 0.1}, 
-  ]
-};
-
 
 
 function myGraph() {
+    /*
+    Define an object class for manipulating a d3 network.
+    Adapted from code by Lopez Hugo:
+      http://bl.ocks.org/hugolpz/cd89b50d834828261b45af9e7a5ce926
+     */
     this.addNode = function(id, r) {
         nodes.push({"id": id, "r": r})
         update();
@@ -125,6 +104,21 @@ function myGraph() {
         // if no matching edge, no big deal
         update();
     };
+    
+    this.removeLinkToNode = function(target) {
+      var link,
+          parent;
+      for (var i=0; i<links.length; i++) {
+        link = links[i];
+        if (link.target.id == target) {
+          links.splice(i, 1);
+          parent = link.source.id;
+          break;  // expect only on incoming-link
+        }
+      }
+      update();
+      return parent;
+    }
 
     this.removeAllLinks = function () {
         links.splice(0, links.length);
@@ -180,8 +174,10 @@ function myGraph() {
 }
 
 
-
 var update = function() {
+    /*
+     Redraw d3 network.
+     */
     var link = vis.selectAll("line")
             .data(links, function (d) {
                 return d.source.id + "-" + d.target.id;
@@ -198,6 +194,11 @@ var update = function() {
         .data(nodes, function(d) {
             return d.id;
         });
+    
+    node.append("text")
+        .attr("dx", 12)
+        .attr("dy", ".35em")
+        .text(function(d) { return d.id });
 
     var nodeEnter = node.enter().append("g")
         .attr("class", "node")
@@ -227,7 +228,8 @@ var update = function() {
     });
 
     // restart the force layout
-    force.charge(-500)
+    force.charge(-200)
+         .gravity(0.05)
          .linkDistance(function(d) {
             return 200*d.dist;
          })
@@ -236,88 +238,87 @@ var update = function() {
 };
 
 
+// ===========================================
+//  initialize graph
+var graph = new myGraph();
 
-// initialize graph
 var csvdata,
     headers,
     node_names,
-    dists, orig_dists;
+    scaling_factor,
+    dists;
 
-d3.text("/data/nj-example.csv").get(function(error, rows) {
-  csvdata = d3.csv.parseRows(rows);
-  headers = csvdata[0];
-  var n = headers.length;
-  node_names = headers.slice(1, n);
-  
-  if (csvdata.length != n) {
-    console.warn("Not a square matrix!");
-  }
-  
-  // convert array into Object
-  dists = Array(n-1);
-  orig_dists = Array(n-1);  // deep copy
-  for (var i=1; i < n; i++) {
-    dists[i-1] = Array(n-1);
-    orig_dists[i-1] = Array(n-1);
-    for (var j=1; j < n; j++) {
-      orig_dists[i-1][j-1] = dists[i-1][j-1] = +csvdata[i][j];
-    }
-  }
-  
-  // initialize graph
-  graph = new myGraph();
-  graph.addNode("root", 0.1);
-  for (var i=1; i<n; i++) {
-    graph.addNode(headers[i], 0.1);
-    graph.addLink(headers[i], "root", 0.5);
-    // TODO: make these edges a fainter color
-  }
-  keepNodesOnTop();
-});
+var stage;
 
-
-
-
-
-
-var ancestors = ["A-B", "E-F", "AB-C", "ABC-D", "ABCD-EF"];
-
-var transitions = {
-  1: {"remove": [{"source": "A", "target": "root", "dist": 0.5},
-              {"source": "B", "target": "root", "dist": 0.5}],
-      "add": [{"source": "A", "target": "A-B", "dist": 0.1},
-              {"source": "B", "target": "A-B", "dist": 0.1},
-              {"source": "A-B", "target": "root", "dist": 0.1}]},
-              
-  2:  {"remove": [{"source": "E", "target": "root", "dist": 0.5},
-              {"source": "F", "target": "root", "dist": 0.5}],
-      "add": [{"source": "E", "target": "E-F", "dist": 0.1},
-              {"source": "F", "target": "E-F", "dist": 0.1},
-              {"source": "E-F", "target": "root", "dist": 0.1}]},
-              
-  3: {"remove": [{"source": "A-B", "target": "root", "dist": 0.5},
-              {"source": "C", "target": "root", "dist": 0.5}],
-      "add": [{"source": "A-B", "target": "AB-C", "dist": 0.1},
-              {"source": "C", "target": "AB-C", "dist": 0.1},
-              {"source": "AB-C", "target": "root", "dist": 0.1}]},
-              
-  4: {"remove": [{"source": "AB-C", "target": "root", "dist": 0.5},
-              {"source": "D", "target": "root", "dist": 0.5}],
-      "add": [{"source": "AB-C", "target": "ABC-D", "dist": 0.1},
-              {"source": "D", "target": "ABC-D", "dist": 0.1},
-              {"source": "ABC-D", "target": "root", "dist": 0.1}]},
-              
-  5: {"remove": [{"source": "ABC-D", "target": "root", "dist": 0.5},
-              {"source": "E-F", "target": "root", "dist": 0.5}],
-      "add": [{"source": "ABC-D", "target": "ABCD-EF", "dist": 0.1},
-              {"source": "E-F", "target": "ABCD-EF", "dist": 0.1},
-              {"source": "ABCD-EF", "target": "root", "dist": 0.1}]}
-};
-
-var stage = 0,
-    removes,
-    adds,
-    t;
+function reset () {
+    /*
+     Reset d3 network and read data from CSV file.
+     */
+    $('#step_btn').removeAttr('disabled');
+    graph.removeAllLinks();
+    graph.removeAllNodes();
+    
+    d3.text("/data/nj-example.csv").get(function(error, rows) {
+      stage = 0;
+      csvdata = d3.csv.parseRows(rows);
+      headers = csvdata[0];
+      var n = headers.length;
+      node_names = headers.slice(1, n);
+      
+      // create table
+      var table = d3.select("div#csvtable")
+                    .html("")  // wipe out previous contents
+                    .append('table');
+                    
+      var thead = table.append('thead');
+      var tbody = table.append('tbody');
+      
+      thead.append('tr').selectAll('th')
+           .data(headers).enter()
+           .append('th')
+           .text(function(d) { return d; });
+      
+      var rows = tbody.selectAll('tr')
+                       .data(rows).enter()
+                       .append('tr');
+      
+      var cells = rows.selectAll('td')
+                      .data(function(row) {
+                        return headers.map(function (col) {
+                          
+                        })
+                      })
+      
+      
+      if (csvdata.length != n) {
+        console.warn("Not a square matrix!");
+      }
+      
+      // convert array into Object
+      var sum = 0;
+      dists = Array(n-1);
+      for (var i=1; i < n; i++) {
+        dists[i-1] = Array(n-1);
+        for (var j=1; j < n; j++) {
+          dists[i-1][j-1] = +csvdata[i][j];
+          if (i>j) {
+            sum = sum+dists[i-1][j-1];
+          }
+        }
+      }
+      scaling_factor = sum / (n*(n-1)/2);
+      
+      // initialize graph
+      graph.addNode("root", 0.1);
+      for (var i=1; i<n; i++) {
+        graph.addNode(headers[i], 0.1);
+        graph.addLink("root", headers[i], 0.5);
+        // TODO: make these edges a fainter color
+      }
+      keepNodesOnTop();
+    });
+}
+reset();
 
 
 function keepNodesOnTop() {
@@ -328,27 +329,12 @@ function keepNodesOnTop() {
 }
 
 
-function prevStage() {
-  //console.log('prevStage');
-  if (stage > 0) {
-    stage = stage-1;
-    graph.removeNode(ancestors[stage]);
-    
-    // reverse order of operations
-    adds = transitions[stage+1]["remove"];
-    for (var i=0; i<adds.length; i++) {
-      t = adds[i];
-      graph.addLink(t.source, t.target, t.dist);
-    }
-    // no need to remove links, since we killed the node
-    
-  }
-  $("#stage_display").val(stage);
-  keepNodesOnTop();
-}
-
 
 function njoin() {
+    /* 
+     Determine which nodes to join next based on their 
+     distances.
+     */
     var n = dists.length;
     
     // compute u
@@ -382,73 +368,94 @@ function njoin() {
     return {'i': min_i, 'j': min_j, 'v_i': v_i, 'v_j': v_j};
 }
 
-function update_dists(i, j) {
-  var n = dists.length;
-  var new_row = Array(n);
-  
-  // calculate distance from new node (ij) to remaining nodes
-  for (var k = 0; k<n; k++) {
-    if (k==i || k==j) {
-      continue;
-    }
-    new_row[k] = (dists[i][k] + dists[j][k] - dists[i][j]) / 2;
-    dists[k].push(new_row[k]);
-  }
-  new_row.push(0);  // distance to self
-  dists.push(new_row);
-  
-  // delete rows i and j from array
-  if (i > j) {
-    // do higher index to preserve indexing
-    dists.splice(i,1);
-    dists.splice(j,1);
-  } else {
-    dists.splice(j,1);
-    dists.splice(i,1);
-  }
-
-  // delete columns i and j from remaining rows
-  for (var k=0; k<n-1; k++) {
-    if (i > j) {
-      dists[k].splice(i,1);
-      dists[k].splice(j,1);
-    } else {
-      dists[k].splice(j,1);
-      dists[k].splice(i,1);
-    }
-  }
-}
 
 
 function nextStage() {
-  //console.log('nextStage');
-  if (stage < 5) {
-    neighbors = njoin();
+  /*
+   Events triggered by Step! button.
+   Perform one iteration of neighbor-joining algorithm.
+   */
+  var ntips = csvdata.length-1;
+  
+  if (stage < ntips-3) {
+    var neighbors = njoin();
+    var i = neighbors.i,
+        j = neighbors.j;
     
     // concatenate new node name
-    new_node = node_names[neighbors.i] + node_names[neighbors.j];
-    
-    // append to ancestors vector (for reversal)
-  
+    new_node = node_names[i] + node_names[j];
+    node_names.push(new_node);
     graph.addNode(new_node, 0.1);
+    //console.log(new_node);
     
+    
+    // calculate distance from new node (ij) to remaining nodes
+    var n = dists.length;
+    var new_row = Array(n);
+    
+    for (var k = 0; k<n; k++) {
+      if (k==i || k==j) {
+        continue;
+      }
+      new_row[k] = (dists[i][k] + dists[j][k] - dists[i][j]) / 2;
+      dists[k].push(new_row[k]);
+    }
+    new_row.push(0);  // distance to self
+    dists.push(new_row);
+
+    
+    // remove branches from unknown parent to i and j
+    parent = graph.removeLinkToNode(node_names[i]);
+    parent = graph.removeLinkToNode(node_names[j]);
+    //console.log(parent);
+    
+    // add branches from new node to i and j
+    graph.addLink(new_node, node_names[i], neighbors.v_i / scaling_factor);
+    graph.addLink(new_node, node_names[j], neighbors.v_j / scaling_factor);
+    graph.addLink(parent, new_node, 0.1);
+    
+    
+    // delete rows i and j from array
+    if (i > j) {
+      // do higher index to preserve indexing
+      dists.splice(i,1);
+      dists.splice(j,1);
+    } else {
+      dists.splice(j,1);
+      dists.splice(i,1);
+    }
+
+    // delete columns i and j from remaining rows
+    for (var k=0; k<n-1; k++) {
+      if (i > j) {
+        dists[k].splice(i,1);
+        dists[k].splice(j,1);
+      } else {
+        dists[k].splice(j,1);
+        dists[k].splice(i,1);
+      }
+    }
+
+    
+    // remove merged nodes
+    if (neighbors.i < neighbors.j) {
+      node_names.splice(neighbors.j, 1);
+      node_names.splice(neighbors.i, 1);
+    } else {
+      node_names.splice(neighbors.i, 1);
+      node_names.splice(neighbors.j, 1);
+    }
     
     stage = stage + 1;
-    
-    adds = transitions[stage]["add"];
-    for (var i = 0; i<adds.length; i++) {
-      t = adds[i];
-      graph.addLink(t.source, t.target, t.dist);
-    }
-    removes = transitions[stage]["remove"];
-    for (var i = 0; i<removes.length; i++) {
-      t = removes[i];
-      graph.removeLink(t.source, t.target);
+    // deactivate Step! button
+    if (stage == ntips-3) {
+      $('#step_btn').attr('disabled', 'disabled');
     }
   }
-  $("#stage_display").val(stage);
   keepNodesOnTop();
 }
+
+
 
 </script>
 
