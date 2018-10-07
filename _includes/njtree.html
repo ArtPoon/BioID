@@ -250,6 +250,7 @@ var csvdata,
 
 var stage;
 
+
 function reset () {
     /*
      Reset d3 network and read data from CSV file.
@@ -264,32 +265,7 @@ function reset () {
       headers = csvdata[0];
       var n = headers.length;
       node_names = headers.slice(1, n);
-      
-      // create table
-      var table = d3.select("div#csvtable")
-                    .html("")  // wipe out previous contents
-                    .append('table');
-                    
-      var thead = table.append('thead');
-      var tbody = table.append('tbody');
-      
-      thead.append('tr').selectAll('th')
-           .data(headers).enter()
-           .append('th')
-           .text(function(d) { return d; });
-      
-      var rows = tbody.selectAll('tr')
-                       .data(rows).enter()
-                       .append('tr');
-      
-      var cells = rows.selectAll('td')
-                      .data(function(row) {
-                        return headers.map(function (col) {
-                          
-                        })
-                      })
-      
-      
+               
       if (csvdata.length != n) {
         console.warn("Not a square matrix!");
       }
@@ -308,6 +284,8 @@ function reset () {
       }
       scaling_factor = sum / (n*(n-1)/2);
       
+      tabulate();
+      
       // initialize graph
       graph.addNode("root", 0.1);
       for (var i=1; i<n; i++) {
@@ -319,6 +297,31 @@ function reset () {
     });
 }
 reset();
+
+
+function tabulate () {
+  // create table
+  var tbl = d3.select("div#csvtable")
+    .html("")  // wipe out previous contents
+    .append('table');
+    
+  tbl.append('thead').append('tr')
+      .selectAll('th')
+      .data(node_names).enter()
+      .append('th')
+      .text(function(d) { return d; });
+      
+  tbl.append('tbody')
+    .selectAll('tr')
+      .data(dists).enter()
+      .append('tr')
+    
+    .selectAll('td')
+      .data(function(d) { return d; }).enter()
+      .append('td')
+      .text(function(d) { return d; });
+}
+
 
 
 function keepNodesOnTop() {
@@ -445,6 +448,8 @@ function nextStage() {
       node_names.splice(neighbors.i, 1);
       node_names.splice(neighbors.j, 1);
     }
+    
+    tabulate();
     
     stage = stage + 1;
     // deactivate Step! button
