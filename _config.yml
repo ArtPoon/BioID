@@ -4,8 +4,8 @@ email: apoon42@uwo.ca
 author: Art Poon
 description: >- # this means to ignore newlines until "baseurl:"
   Online materials for my undergraduate course.
-baseurl: "" # the subpath of your site, e.g. /blog
-url: "" # the base hostname & protocol for your site, e.g. http://example.com
+baseurl: "/BioID" # the subpath of your site, e.g. /blog
+url: "http://artpoon.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: art_poon
 github_username:  ArtPoon
 github_repo: http://github.com/ArtPoon/BioID
