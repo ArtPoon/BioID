@@ -5,6 +5,7 @@ title: Alignment
 
 {% include toc.html %}
 
+
 ## What is alignment?
 
 A sequence alignment is a detailed model about how two or more sequences are related to each other.
@@ -126,6 +127,14 @@ ATGCACGTTATG
 The most well known algorithm for generating a local pairwise alignment is the [Smith-Waterman algorithm](https://en.wikipedia.org/wiki/Smith%E2%80%93Waterman_algorithm). 
 It is derived from the Needleman-Wunsch algorithm but it is more complex to calculate, in part because the start and end points of the alignment are no longer constrained to the lower-right and upper-left corners of the matrix.
 The sequence alignment programs that we use today generally implement some offshoot of the Smith-Waterman algorithm, with refinements to optimize the speed of calculation or output multiple alignments when there are multiple solutions with the same alignment score.
+
+
+### Querying a database by sequence similarity
+
+
+Some times we do not have the luxury of querying a database by high level information such as the name of a gene or organism.
+For instance, there are many bioinformatic applications where all that we have to work with is a partial nucleotide sequence.
+
 
 
 

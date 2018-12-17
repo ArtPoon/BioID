@@ -45,6 +45,11 @@ html {
   }
 }
 
+@font-face {
+  font-family: "Cabin";
+  src: url('https://fonts.googleapis.com/css?family=Cabin');
+}
+
 
 /*
  * Sidebar
@@ -81,7 +86,7 @@ html {
   margin-top: 0;
   font-family: "Cabin", sans-serif;
   font-size: 1.8rem;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .sidebar-nowrap span {

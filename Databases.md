@@ -50,7 +50,7 @@ Under this broad definition, a stack of papers on my desk is a database if I add
 However, this is not that different from how data from the initial era of genetic sequencing was compiled into a reference archive.
 As the pile of paper gets higher, it becomes more and more difficult to retrieve a specific page.  
 
-The National Center for Biotechnology Information is the home of GenBank, arguably the largest public repository of genetic sequence information in the world.
+The National Center for Biotechnology Information (NCBI) is the home of GenBank, arguably the largest public repository of genetic sequence information in the world.
 The predecessor of GenBank, the Atlas of Protein Sequence and Structure, was initiated and maintained by [Dr. Margaret Oakley Dayhoff](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5037978/), a pioneer of bioinformatics who also created some of its foundational computational methods.
 The Atlas was essentially a stack of printed pages that collated the known protein sequences into a book.
 How many pages would it take to record the current contents of GenBank?
@@ -71,16 +71,108 @@ We can use a bit of Python to do the math:
 1861920.2161695
 ```
 
-* sequences used to be kept in books
-* Margaret Oakley Dayhoff
-* how many printed pages would it take to record the current contents of Genbank? - calculate in Python (variable assignment and arithmetic)
+This would take about 1.8 thousand kilograms (metric tonnes) of paper! 
+(That's equivalent to about two dozen [fully-loaded Boeing 737s](https://en.wikipedia.org/wiki/List_of_airliners_by_maximum_takeoff_weight).)
 
-* genbank
 
-* annotations - 
+### Primary keys
+Even if we used the digital equivalent of a stack of paper and accumulated these sequence records in a single text file, the end result would be far more compact but still not terribly useful &mdash; we need a way to retrieve a particular record from this file.
+First, we need some way of identifying a specific record.  
+It wouldn't be sufficient, for example, to say "give me the sequence of the [&beta; subunit of the bacterial RNA polymerase](https://en.wikipedia.org/wiki/RpoB) for [*Vibrio cholerae*](https://en.wikipedia.org/wiki/Vibrio_cholerae).
+(For one thing, the computer won't understand what you're talking about.)
+This request is far too arbitrary: we could have asked for "Vibrio cholerae's RNA polymerase beta subunit", or "V. cholerae rpoB".
+It's even worse if there are multiple sequences of this gene and bacterial species in the database! 
+Instead, we need to agree on a formal standard system for requesting records.
+A [primary key](https://en.wikipedia.org/wiki/Primary_key) is some datum (usually a number or string) that uniquely identifies a record in the database. 
+We could settle on a consistent system for composing a key from a given sequence record. 
+For example, we could imagine a text file that contains the key `Vibrio_cholerae_RNA_polymerase _beta_subunit_rpoB_1` on one line that is immediately followed by the gene sequence.
 
-* searching - storage isn't enough 
-* how to query a sequence database, distance matrices
-* BLAST
+However, having a primary key still doesn't help us locate a particular record without exhaustively searching through the entire text file. 
+This would be like trying to find your friend's phone number in a [phone book](https://en.wikipedia.org/wiki/Telephone_directory) by starting at the first page - horribly inefficient! 
+Of course, a phone book organizes its records (pairs of names and phone numbers) by region and alphabetical order, but this is still inefficient in the context of organisms and genes since there are potentially enormous numbers of each category.
 
-* local BLAST
+{% include image.html file="Telefonbog_ubt-0.JPG" width="300px" description="Remember these?" %}
+
+
+### Database indices
+
+Imagine that we're still trying to sift through an enormous text file with our primary key in hand.  (Yes, we could open the text file in an [text editor](https://en.wikipedia.org/wiki/Text_editor) application and use a find function to locate the record, but that is offloading the problem to someone else's program and it is not always feasible to load the entire contents of a text file into a text editor.)
+Suppose that the record we're looking for starts on the 7,612,910-th line of the plain text file.
+It would be much more efficient if we skim through an index of primary keys paired with line numbers instead of scanning through the entire contents of the file.
+This is essentially the role of a [database index](https://en.wikipedia.org/wiki/Database_index): a specialized data structure that makes look-up operations more efficient.
+
+> The concept of indices will come up again for the alignment of next-generation sequences to a reference genome.  In this case, we use a fragment of our query sequence as the key to retrieve a location in the reference genome from the index.  You can read more about this in the [Alignment](Alignment.md) document.
+
+A database that needs to deal with a large number of text documents will often make use of indexes to facilitate [text searches](https://en.wikipedia.org/wiki/Full-text_search).
+The NCBI databases employ an integrated search and retrieval system called [Entrez](https://www.ncbi.nlm.nih.gov/search/).
+It is essentially a Google search engine for the enormous repositories of genomic and medical information stored in the public NCBI databases.
+We will learn more about working with Entrez in the practical session associated with this topic.
+
+
+### File formats
+
+So far we have been talking about databases as plain text files where records are indexed by some system of keys.
+There is no particular structure to one of these plain text files. 
+For instance, we could simply have a line containing the record's key, followed by as many lines as needed to write the nucleotide sequence associated with that key:
+```
+KP728283.1 Zaire ebolavirus isolate Ebola virus/H.sapiens-wt/CHE/2014/Makona-GE1, complete genome
+GGATCTTTTGTGTGCGAATAACTATGAGGAAGATTAATAATTTTCCTCTCATTGAAATTTATATCGGAAT
+TTAAATTGAAATTGTTACTGTAATCATACCTGGTTTGTTTCAGAGCCATATCACCAAGATAGAGAACAAC
+CTAGGTCTCCGGAGGGGGCAAGGGCATCAGTGTGCTCAGTTGAAAATCCCTTGTCAACATCTAGGCCTTA
+```
+
+A [file format](https://en.wikipedia.org/wiki/File_format) is a formal specification (*i.e.,* set of rules) of how data should be encoded in a file. 
+If a computer program or user doesn't adhere to this specification then there is no guarantee that the same program or another program will successfully restore the original data from the file.
+
+>The web page that you're reading right now was generated by an algorithm that converted a plain text file into [HTML](https://en.wikipedia.org/wiki/HTML) (another file format!) because the contents of that file adhered to a file format called [Markdown](https://en.wikipedia.org/wiki/Markdown).
+
+A file that does not follow any particular specification is sometimes referred to as [*unstructured data*](https://en.wikipedia.org/wiki/Unstructured_data).
+The plain text content of a newspaper or a journal article can be considered to be unstructured data.
+It is difficult to have a computer program extract information from unstructured data because there is no consistent scheme that the program can use to map portions of text to labels such as "title" or "publication date".
+
+
+
+#### FASTA
+In fact, this is already very similar to a widespread standard format for storing sequences in a plain text file called `FASTA`.
+[FASTA](https://en.wikipedia.org/wiki/FASTA) is a defunct computer program that was developed in the 1980s to search a sequence database for entries that are similar to the user's query sequence. 
+Although this program is no longer in use, its format for storing sequences in plain text files is possibly the most common format in use today. 
+The [FASTA format](https://en.wikipedia.org/wiki/FASTA_format) uses a `>` character prefix to indicate the start of a new record. 
+All of the [header](https://en.wikipedia.org/wiki/Header_(computing)) information is stored in the same line prefixed by `>`.  
+All subsequent lines are assumed to contain nucleotide or protein sequence (not both) data associated with that record, until the start of the next record on a new line.
+Thus, the above example can be converted into a FASTA format simply by the addition of one character:
+```
+>KP728283.1 Zaire ebolavirus isolate Ebola virus/H.sapiens-wt/CHE/2014/Makona-GE1, complete genome
+GGATCTTTTGTGTGCGAATAACTATGAGGAAGATTAATAATTTTCCTCTCATTGAAATTTATATCGGAAT
+```
+
+The FASTA format is appealing because of its simplicity, but it also makes it difficult to store other information ([metadata](https://en.wikipedia.org/wiki/Metadata)) in a consistent and readily accessible way.
+Not surprisingly, there are dozens of other file formats for storing sequence data.
+A nice comparison of these file formats can be found [here](https://www.hiv.lanl.gov/content/sequence/HelpDocs/SEQsamples.html).
+
+
+#### NEXUS
+
+The [NEXUS](https://en.wikipedia.org/wiki/Nexus_file) file format is a highly structured file format. 
+It is designed to accommodate a more diverse set of information, such as a phylogenetic tree that has been reconstructed from the sequences contained in the file.
+Although there have been several software packages that support the NEXUS format, the specification has not been consistently implemented from one program to another.
+>It doesn't help that the field of crystallography *also* has a NeXus file format.
+
+Data in a NEXUS formatted file are organized into blocks.
+Each block is delimited by a `begin` and `end` tag.
+```
+#NEXUS
+Begin data;
+  dimensions ntax 
+End;
+```
+
+
+[flat files](https://en.wikipedia.org/wiki/Flat-file_database), where all the information is stored as a plain text file.
+
+
+### Relational databases
+
+
+
+
+
