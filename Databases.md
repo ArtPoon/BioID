@@ -48,7 +48,28 @@ This course is about infectious diseases, so we're generally not going to be dea
 A database is a systematic collection of data. 
 Under this broad definition, a stack of papers on my desk is a database if I add papers to the top of the pile to maintain a chronological order - it's just not a terribly useful database.
 However, this is not that different from how data from the initial era of genetic sequencing was compiled into a reference archive.
+As the pile of paper gets higher, it becomes more and more difficult to retrieve a specific page.  
 
+The National Center for Biotechnology Information is the home of GenBank, arguably the largest public repository of genetic sequence information in the world.
+The predecessor of GenBank, the Atlas of Protein Sequence and Structure, was initiated and maintained by [Dr. Margaret Oakley Dayhoff](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5037978/), a pioneer of bioinformatics who also created some of its foundational computational methods.
+The Atlas was essentially a stack of printed pages that collated the known protein sequences into a book.
+How many pages would it take to record the current contents of GenBank?
+As of [October 2018](https://www.ncbi.nlm.nih.gov/genbank/statistics/), GenBank contained about $$\mathsf{3.72\times 10^{12}}$$ nucleotides of data.
+Suppose we can fit about 5,000 characters representing nucleotides on a printed page, and we use both sides.  
+We can use a bit of Python to do the math:
+
+```python
+>>> a = 3444172142207 + 279668290132  # nt for whole-genome and standard seqs
+>>> a/10000.
+372384043.2339
+>>> b = a/10000.
+>>> b
+372384043.2339
+>>> '{:1.2e}'.format(b)  # scientific notation
+'3.72e+08'
+>>> b * 0.005  # suppose one sheet weights 5g
+1861920.2161695
+```
 
 * sequences used to be kept in books
 * Margaret Oakley Dayhoff
