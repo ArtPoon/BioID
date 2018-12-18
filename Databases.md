@@ -50,6 +50,15 @@ Under this broad definition, a stack of papers on my desk is a database if I add
 However, this is not that different from how data from the initial era of genetic sequencing was compiled into a reference archive.
 As the pile of paper gets higher, it becomes more and more difficult to retrieve a specific page.  
 
+This section is going to focus mainly on genetic sequence databases.
+There are many other kinds of [biological databases](https://en.wikipedia.org/wiki/List_of_biological_databases), such as the [Protein Data 
+Bank](https://www.rcsb.org/) that stores the coordinate data of three-dimensional protein structures, the increasing commoditization of next-generatoin sequencing has caused genetic sequence data to supercede other sources of biological data.
+For instance, microarrays were the primary technology for measuring gene expression until the advent of [RNA-Seq](https://en.wikipedia.org/wiki/RNA-Seq).
+Similarly, [16S ribosomal RNA](https://en.wikipedia.org/wiki/16S_ribosomal_RNA) sequencing has largely superceded indirect assays of 16S variation such as [gradient gel eletrophoresis](https://en.wikipedia.org/wiki/RNA-Seq) to quantify the composition of microbial communities.
+
+
+### GenBank
+
 The National Center for Biotechnology Information (NCBI) is the home of GenBank, arguably the largest public repository of genetic sequence information in the world.
 The predecessor of GenBank, the Atlas of Protein Sequence and Structure, was initiated and maintained by [Dr. Margaret Oakley Dayhoff](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5037978/), a pioneer of bioinformatics who also created some of its foundational computational methods.
 The Atlas was essentially a stack of printed pages that collated the known protein sequences into a book.
@@ -74,6 +83,27 @@ We can use a bit of Python to do the math:
 This would take about 1.8 thousand kilograms (metric tonnes) of paper! 
 (That's equivalent to about two dozen [fully-loaded Boeing 737s](https://en.wikipedia.org/wiki/List_of_airliners_by_maximum_takeoff_weight).)
 
+
+### Other databases
+
+There are countless other public databases with genetic sequences that you can access on the web.
+Many of these databases focus on a specific organism (*e.g.,* human immunodeficiency virus type 1) or genomic feature ([microsatellites](https://en.wikipedia.org/wiki/Microsatellite)).
+Changes are that for your research interest, there is already a database out there catering to your needs.
+
+The following table is *not* a comprehensive listing of public sequence databases.
+(It's mostly a place for me to record ones that I've come across while preparing these course readings.)
+Share and Enjoy:
+
+| Name | URL | Description |
+|------|-----|-------------|
+| The RNase P database | <http://www.mbio.ncsu.edu/RNaseP> | RNase P sequences, secondary structures, and more. | 
+| MicroSatellite DataBase (MSDB) | <http://tdb.ccmb.res.in/msdb> | A collection of simple sequence repeats |
+| miRBase | <http://www.mirbase.org/index.shtml> | A searchable database of published microRNA sequences. |
+| LANL HIV Databases | <https://www.hiv.lanl.gov> | A repository of HIV and SIV sequence data curated by scientists at the Los Alamos National Laboratory. |
+| LANL HCV Databases | <https://hcv.lanl.gov/content/index> | A sister site to the HIV databases that is no longer funded and maintained. |
+
+
+## How do we organize data?
 
 ### Primary keys
 Even if we used the digital equivalent of a stack of paper and accumulated these sequence records in a single text file, the end result would be far more compact but still not terribly useful &mdash; we need a way to retrieve a particular record from this file.
@@ -109,7 +139,7 @@ It is essentially a Google search engine for the enormous repositories of genomi
 We will learn more about working with Entrez in the practical session associated with this topic.
 
 
-### File formats
+## File formats
 
 So far we have been talking about databases as plain text files where records are indexed by some system of keys.
 There is no particular structure to one of these plain text files. 
@@ -145,6 +175,23 @@ Thus, the above example can be converted into a FASTA format simply by the addit
 GGATCTTTTGTGTGCGAATAACTATGAGGAAGATTAATAATTTTCCTCTCATTGAAATTTATATCGGAAT
 ```
 
+Here is a more complete example of four partial RNase P gene sequences from different species of gammaproteobacteria:
+```
+>AF084930.1 Proteus vulgaris RNase P RNA subunit (rnpB) gene, partial
+GGATCCGGGGAGGAAAGTCCGGGCTCCACAGGGCAGGGTGCCAGATAACGTCTGGGAGGCGCGAGCCTAC
+GACAAGTGCAGCAGAGAGTAAACCGCCGATGGCCTGTTTACAGGATCAGGTAAGGGTGAAAGGGTGCGGT
+>P.aeruginosa RNase P RNA
+AGAGUCGAUUGGACAGUCGCUGUCGCGCAAUAGCGCGGUGGAGGAAAGUCCGGGCUCCAUAGGGCAGAGU
+GCCAGGUAACGCCUGGGAGGCGCGAGCCUACGGAAAGUGCCACAGAAAAUAACCGCCUAAGCGCAACAGC
+>M10889.1 S.typhimurium gene for RNA subunit (M1 RNA) of ribonuclease 
+CGACAGGATGAATGACTGTCCACGACGCTATACCCAAAAGAAAGCGGCTTATCGGTCAGTATCATCACTT
+CATAAAACCCGTCAGTGTAAGCTGGCGGGTTTTTGCTTTTACAGGGCGGCAGGATGAATGACTGTCCACG
+>M33657.1 E.agglomerans RNA component of ribonuclease P gene
+GAAGCTGACCAGACAGTCGCCGCTTCGTCGTCGTCCTCCTTCGGGGGGAGACGGGCGGAGGGGAGGAAAG
+TCCGGGCTCCATAGGGCAAGGTGCCAGGTAACGCCTGGGGGGTGTCACGACCCACGACCAGTGCAACAGA
+```
+
+
 The FASTA format is appealing because of its simplicity, but it also makes it difficult to store other information ([metadata](https://en.wikipedia.org/wiki/Metadata)) in a consistent and readily accessible way.
 Not surprisingly, there are dozens of other file formats for storing sequence data.
 A nice comparison of these file formats can be found [here](https://www.hiv.lanl.gov/content/sequence/HelpDocs/SEQsamples.html).
@@ -158,19 +205,101 @@ Although there have been several software packages that support the NEXUS format
 >It doesn't help that the field of crystallography *also* has a NeXus file format.
 
 Data in a NEXUS formatted file are organized into blocks.
-Each block is delimited by a `begin` and `end` tag.
+Each block is delimited by a `begin` and `end` tag. 
+Below, I've pasted in the result from converting the previous FASTA file contents into a NEXUS format with the program [AliView](http://www.ormbunkar.se/aliview/):
 ```
 #NEXUS
-Begin data;
-  dimensions ntax 
-End;
+
+BEGIN DATA;
+DIMENSIONS  NTAX=4 NCHAR=140;
+FORMAT DATATYPE=DNA GAP=- MISSING=?;
+MATRIX
+
+AF084930.1 Proteus vulgaris  GGATCCGGGGAGGAAAGTCCGGGCTCC...
+P.aeruginosa RNase P RNA     AGAGUCGAUUGGACAGUCGCUGUCGCG...
+M10889.1 S.typhimurium       CGACAGGATGAATGACTGTCCACGACG...
+M33657.1 E.agglomerans       GAAGCTGACCAGACAGTCGCCGCTTCG...
+;
+
+END;
+
+BEGIN ASSUMPTIONS;
+EXSET * UNTITLED  = ;
+END;
+
+BEGIN CODONS;
+CODONPOSSET * CodonPositions =
+ N:,
+ 1: 1-139\3,
+ 2: 2-140\3,
+ 3: 3-138\3;
+CODESET  * UNTITLED = Universal: all ;
+END;
+
+BEGIN SETS;
+END;
+```
+Note that I've truncated both the sequence headers (labels) and the nucleotide sequences (...) so that the web page doesn't [soft wrap](https://en.wikipedia.org/wiki/Line_wrap_and_word_wrap#Soft_and_hard_returns) these entries onto multiple lines. 
+This makes it easier to see that:
+1. Each sequence label appears on the left, followed by enough spaces to align the nucleotide sequences together.
+2. Each sequence is contained on a single line.
+3. That *AliView* embeds additional information in this file, such as the assumed genetic code.
+
+As mentioned above, there are several variants on the NEXUS format. 
+For example, an interleaved NEXUS file will display a only set number of nucleotides per line, followed by as many additional data blocks as necessary to run through the entire sequence lengths:
+```
+#NEXUS
+
+BEGIN DATA;
+DIMENSIONS  NTAX=4 NCHAR=140;
+FORMAT DATATYPE=DNA GAP=- MISSING=? INTERLEAVE=YES;
+MATRIX
+
+AF084930.1 Proteus vulgaris  GGATCCGGGG
+P.aeruginosa RNase P RNA     AGAGUCGAUU
+M10889.1 S.typhimurium       CGACAGGATG
+M33657.1 E.agglomerans       GAAGCTGACC
+
+AF084930.1 Proteus vulgaris  AGGAAAGTCC
+P.aeruginosa RNase P RNA     GGACAGUCGC
+M10889.1 S.typhimurium       AATGACTGTC
+M33657.1 E.agglomerans       AGACAGTCGC
+```
+
+In practice, you are unlikely to encounter the NEXUS format unless you are using a specialized phylogenetic tree reconstruction (*e.g.*, [MrBayes](http://nbisweden.github.io/MrBayes/)) or sequence analysis (*e.g.*, [Mesquite](https://www.mesquiteproject.org/)) program.
+Nowadays you're more likely to encounter next-generation sequence file formats, which we'll cover in the section on [NGS](NGS.html).
+
+
+
+## Flat files
+
+Not all the data that we deal with in bioinformatics is based on genetic sequences.
+In bioinformatics, you will frequently be dealing with [flat files](https://en.wikipedia.org/wiki/Flat-file_database), where all the information is stored as a plain text file.
+For example, the [comma-separated values](https://en.wikipedia.org/wiki/Comma-separated_values) (CSV) format is widely used to store tabular data, where values are arranged in [tables](https://en.wikipedia.org/wiki/Table_(information)) with rows and columns like a [spreadsheet](https://en.wikipedia.org/wiki/Spreadsheet).
+By convention, each row corresponds to an observation and each column represents a kind of measurement (variable).
+
+To illustrate, I've reproduced a portion of a table from a publication in the British Medical Journal from 1965 ([Graph and Table of Infectious Disease](https://www.ncbi.nlm.nih.gov/pubmed/20790782)):
+ 
+| Cases | Eng. & Wales | Grt. Lnd | Scot. | N.Ire. | [Eire](https://en.wikipedia.org/wiki/%C3%89ire) |
+|-------|--------------|----------|-------|--------|------|
+| Diptheria | 0 | 0 | 1 | 0 |  |
+| Dysentry  | 482 | 85 | 136 | 5 | 2 |
+| Encephatlis, acute | 2 | 0 |   | 0 |   |
+| Enteric fever, typhoid | 3 | 1 | 4 | 1 |   |
+| Measles | 3268 | 153 | 37 | 40 | 73 |
+
+and here are the same data in a CSV format:
+```CSV
+Cases,Eng. & Wales,Grt. Lnd,Scot.,N.Ire.,Eire
+Diptheria,0,0,1,0,
+Dysentry,482,85,136,5,2
+"Encephatlis, acute",2,0,,0,,
+"Enteric fever, typhoid",3,1,4,1,
+Measles,3268,153,37,40,73
 ```
 
 
-[flat files](https://en.wikipedia.org/wiki/Flat-file_database), where all the information is stored as a plain text file.
-
-
-### Relational databases
+## Relational databases
 
 
 
