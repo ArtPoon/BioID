@@ -263,7 +263,7 @@ function reset () {
     graph.removeAllLinks();
     graph.removeAllNodes();
     
-    d3.text("/data/nj-example.csv").get(function(error, rows) {
+    d3.text("{{ site.baseurl }}/data/nj-example.csv").get(function(error, rows) {
       stage = 0;
       csvdata = d3.csv.parseRows(rows);
       headers = csvdata[0];
