@@ -301,6 +301,8 @@ Measles,3268,153,37,40,73
 
 ## Relational databases
 
+When you are doing something online that involves transferring information, you are usually interacting with a database.  
+
 
 
 
