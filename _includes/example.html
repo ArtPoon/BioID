@@ -10,10 +10,11 @@ div.example {
 
 
 <div id="wrapper">
+  (Try moving your mouse over the "beans".)
   <div id="example"></div>
 </div>
 
-<script src="/public/js/d3.v3.min.js"></script>
+<script src="{{ site.baseurl }}/public/js/d3.v3.min.js"></script>
 <script>
 
 var w = 400,
@@ -31,7 +32,7 @@ var force = d3.layout.force()
             .size([w, h]);
 
 var root = nodes[0];
-root.radius = 0;
+root.radius = 5;
 root.fixed = true;
 
 force.start();
@@ -63,12 +64,15 @@ force.on("tick", function(e) {
       .attr("cy", function(d) { return d.y; });
 });
 
-svg.on("mousemove", function() {
+
+svg.on("mouseover", function() {
+  // cause "beans" to jostle by mapping mouse movements to root node
   var p1 = d3.mouse(this);
   root.px = p1[0];
   root.py = p1[1];
   force.resume();
 });
+
 
 window.addEventListener("scroll", function(e) {
   root.px = Math.random() * w;

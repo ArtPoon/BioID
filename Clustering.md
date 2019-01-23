@@ -277,7 +277,7 @@ Infections that are connected by one common ancestor in the tree are more closel
 For example, the tree below indicates that humans are more closely related to chimpanzees than apes.
 
 <center>
-  <img src="/public/img/chimpanzee.svg" width="300px"/>
+  <img src="{{ site.baseurl }}/public/img/chimpanzee.svg" width="300px"/>
 </center>
 
 (Note that I've used the same branch lengths to emphasize that the only information we are using here is the branching order.)

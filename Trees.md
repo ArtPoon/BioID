@@ -85,7 +85,7 @@ This matrix indicates that **A** and **B** are the most closely related sequence
 This implies the following rooted tree topology (ignoring branch lengths for now):
 
 <center>
-<img src="/public/img/simple-tree.svg"/>
+<img src="{{ site.baseurl }}/public/img/simple-tree.svg"/>
 </center>
 
 However, if we want the branch lengths in the tree to be congruent to the distances, then we are in a bind! 
