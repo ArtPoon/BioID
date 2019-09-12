@@ -4,7 +4,7 @@
 #grid th{
     color:white;
     background-color:gray;
-    width:50px;
+    width:40px;
     border:2px solid transparent;
 }
 #grid th.highlight{
@@ -12,7 +12,7 @@
     background-color:green;
 }
 #grid td{
-    width:50px;
+    width:40px;
     cursor:pointer;
     text-align:center;
     font-weight:bold;
@@ -35,7 +35,7 @@
     background-color:gold;
 }
 #grid tr{
-    height:50px;
+    height:40px;
 }
 #alignment {
     min-width:250px;
