@@ -1,4 +1,10 @@
 /**
+ * Example Newick string for an unrooted tree from 
+ * Felsenstein (2004), Inferring Phylogenies, p.573
+*/
+const example = "((((((A:4,B:4):6,C:5):8,D:6):3,E:21):10,((F:4,G:12):14,H:8):13):13,((I:5,J:2):30,(K:11,L:11):2):17,M:60);";
+
+/**
  * Parse a Newick tree string into a doubly-linked
  * list of JS Objects.  Assigns node labels, branch 
  * lengths and node IDs (numbering terminal before 
@@ -200,5 +206,6 @@ function equalAngleLayout(node) {
 function equalDaylight(tree) {
     // get starting tree
     equalAngleLayout(tree);
+
     
 }
