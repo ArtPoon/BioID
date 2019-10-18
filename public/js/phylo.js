@@ -76,6 +76,9 @@ function readTree(text) {
         }
     }
 
+    // if root node is unlabelled
+    curnode.id = nodeId;
+
     return (root);
     //return({json: root, error: null});
 }
@@ -146,22 +149,60 @@ function fortify(tree) {
 
     for (const node of preorder(tree)) {
         if (node.parent === null) {
-            // skip the root node
-            continue;
+            df.push({
+                'parentId': null,
+                'parentLabel': null,
+                'childId': node.id, 
+                'childLabel': node.label, 
+                'branchLength': 0.,
+                'isTip': (node.children.length==0),
+                'x': node.x,
+                'y': node.y,
+                'angle': node.angle
+            })
         }
-        df.push({
-            'parentId': node.parent.id,
-            'parentLabel': node.parent.label,
-            'childId': node.id, 
-            'childLabel': node.label, 
-            'branchLength': node.branchLength,
-            'isTip': (node.children.length==0),
-            'x': node.x,
-            'y': node.y,
-            'angle': node.angle
-        })
+        else {
+            df.push({
+                'parentId': node.parent.id,
+                'parentLabel': node.parent.label,
+                'childId': node.id, 
+                'childLabel': node.label, 
+                'branchLength': node.branchLength,
+                'isTip': (node.children.length==0),
+                'x': node.x,
+                'y': node.y,
+                'angle': node.angle
+            })
+        }
     }
     return(df);
+}
+
+
+function edges(df) {
+    var result = [],
+        parent, pair;
+    
+    // sort data frame for direct lookup on childId
+    var dfsort = df.sort(function(a, b) {
+        return a.childId - b.childId;
+    })
+
+    for (const row of df) {
+        x1 = row.x;
+        y1 = row.y;
+        if (row.parentId === null) {
+            continue  // skip the root
+        }
+        parent = dfsort[row.parentId];
+        if (parent === null) continue;
+        pair = {
+            x1: row.x, y1: row.y,
+            x2: parent.x, y2: parent.y
+        }
+        result.push(pair);
+    }
+    return(result);
 }
 
 
