@@ -52,15 +52,15 @@ function readTree(text) {
             if (nodeinfo.length==1) {
                 if (token.startsWith(':')) {
                     curnode.label = "";
-                    curnode.branch_length = parseFloat(nodeinfo[0]);
+                    curnode.branchLength = parseFloat(nodeinfo[0]);
                 } else {
                     curnode.label = nodeinfo[0];
-                    curnode.branch_length = null;
+                    curnode.branchLength = null;
                 }
             }
             else if (nodeinfo.length==2) {
                 curnode.label = nodeinfo[0];
-                curnode.branch_length = parseFloat(nodeinfo[1]);
+                curnode.branchLength = parseFloat(nodeinfo[1]);
             }
             else {
                 // TODO: handle edge cases with >1 ":"
@@ -146,7 +146,7 @@ function fortify(tree) {
             'parentLabel': node.parent.label,
             'childId': node.id, 
             'childLabel': node.label, 
-            'branchLength': node.branch_length,
+            'branchLength': node.branchLength,
             'isTip': (node.children.length==0)
         })
     }
@@ -156,20 +156,23 @@ function fortify(tree) {
 
 /**
  * Equal-angle layout algorithm for unrooted trees.
+ * Populates the nodes of a tree object with information on 
+ * the angles to draw branches such that they do not 
+ * intersect.
+ * @param {object} node 
  */
-function equalAngles(node) {
+function equalAngleLayout(node) {
     if (node.parent === null) {
         // node is root
         node.start = 0.;
         node.end = 2.; // *pi
         node.angle = 0.;  // irrelevant
         node.ntips = numTips(node);
+        node.x = 0;
+        node.y = 0;
     }
 
-    var child,
-        ntips,
-        arc, 
-        lastStart = node.start;
+    var child, arc, lastStart = node.start;
 
     for (var i=0; i<node.children.length; i++) {
         child = node.children[i];
@@ -179,10 +182,23 @@ function equalAngles(node) {
         arc = (node.end-node.start) * child.ntips/node.ntips;
         child.start = lastStart;
         child.end = child.start + arc;
+
+        // bisect the arc
         child.angle = child.start + (child.end-child.start)/2.;
         lastStart = child.end;
 
+        // map to coordinates
+        child.x = node.x + child.branchLength * Math.sin(child.angle*Math.PI);
+        child.y = node.y + child.branchLength * Math.cos(child.angle*Math.PI);
+   
         // climb up
-        equalAngles(child);
+        equalAngleLayout(child);
     }
+}
+
+
+function equalDaylight(tree) {
+    // get starting tree
+    equalAngleLayout(tree);
+    
 }
