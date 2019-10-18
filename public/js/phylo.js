@@ -75,7 +75,9 @@ function readTree(text) {
             curnode.id = nodeId++;  // assign then increment   
         }
     }
-    return(root);
+
+    return (root);
+    //return({json: root, error: null});
 }
 
 //var s = "(A:0.1,B:0.2,(C:0.3,D:0.4)E:0.5)F;";
@@ -153,7 +155,10 @@ function fortify(tree) {
             'childId': node.id, 
             'childLabel': node.label, 
             'branchLength': node.branchLength,
-            'isTip': (node.children.length==0)
+            'isTip': (node.children.length==0),
+            'x': node.x,
+            'y': node.y,
+            'angle': node.angle
         })
     }
     return(df);
@@ -207,5 +212,5 @@ function equalDaylight(tree) {
     // get starting tree
     equalAngleLayout(tree);
 
-    
+
 }
