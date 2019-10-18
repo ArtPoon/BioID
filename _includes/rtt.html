@@ -2,6 +2,11 @@
     table {
         width: 100%;
     }
+    rect {
+        fill: none;
+        cursor: crosshair;
+        pointer-events: all;
+    }
 </style>
 
 
@@ -53,7 +58,7 @@
     var tree = readTree(example);
     equalAngleLayout(tree);
 
-    var data = fortify(tree),
+    var data = fortify(tree, sort=true),
         edgeset = edges(data);
 
     // add buffer to data domain
@@ -96,6 +101,135 @@
        .attr("stroke-width", 2)
        .attr("stroke", "#00000040");
 
+    // add circle
+    var circle1 = svg.append("circle")
+                    .attr("cx", xScale(0))
+                    .attr("cy", yScale(0))
+                    .attr("r", 3)
+                    .attr("fill", "red");
+    
+    var circle2 = svg.append("circle")
+                    .attr("cx", xScale(0))
+                    .attr("cy", yScale(0))
+                    .attr("r", 3)
+                    .attr("fill", "blue");                    
 
+    svg.append("rect")
+       .attr("width", width)
+       .attr("height", height)
+       .on("mousemove", function() {
+           var m = d3.mouse(this),
+               p = closestPoint(m);
+               circle1.attr("cx", xScale(p.closest.x))
+                      .attr("cy", yScale(p.closest.y));
+               circle2.attr("cx", xScale(p.closest2.x))
+                      .attr("cy", yScale(p.closest2.y));
+       });
 
+    // locate the closest point on tree
+    function closestPoint(point) {
+        var px = point[0],
+            py = point[1],
+            dx, dy, angle, dist, mindist = Infinity,
+            closest, closest2;
+
+        // locate the closest point
+        for (const dt of data) {
+            // not necessary to square root
+            dx = px - xScale(dt.x);
+            dy = py - yScale(dt.y);
+            dist = dx*dx + dy*dy;
+            if (dist < mindist) {
+                mindist = dist;
+                closest = dt;  // row from data
+                angle = Math.atan(dy/dx) / Math.PI;
+            }
+        }
+
+        // adjust angle for quadrant
+        dx = px - xScale(closest.x);
+        dy = py - yScale(closest.y);
+        //console.log(dx, dy);
+        if (dx >= 0) {
+            if (dy >= 0) {
+                // do nothing
+            } else {
+                // lower-right, angle between -1/2 and 0
+                angle += 2.
+            }
+        } else {
+            angle += 1.
+        }
+        // the angle system is all screwy, need to add .5
+        angle += .5
+        if (angle > 2) {
+            angle -= 2.
+        }
+        //console.log(angle);
+        
+        // select second point based on adjacent nodes
+        var row, rays = [];
+        for (const childId of closest.children) {
+            row = data[childId];
+            rays.push([row.angle, row]);
+        }
+        row = data[closest.parentId];
+        if (row !== undefined) {
+            // reverse direction of parental edge
+            if (row.angle < 1) {
+                rays.push([row.angle+1., row]);
+            } else {
+                rays.push([row.angle-1., row]);
+            }
+        }
+        
+        if (rays.length == 1) {
+            // terminal branch
+            return ({
+                closest: closest,
+                closest2: rays[0][1]
+            });
+        }
+        
+        // bisect rows
+        rays.sort()  // sort on first element per Array
+        //console.log(rays.map(x=>x[0]));
+
+        var bisects = [];
+        for (var i=0; i<rays.length; i++) {
+            var ray1 = rays[i][0],  // angle
+                ray2 = rays[(i+1)%rays.length][0],
+                delta = Math.abs(ray2 - ray1),
+                bisect = Math.min(ray1, ray2) + delta/2.;
+
+            if (delta > 1.) {
+                bisects.push(bisect-1.)
+            } else {
+                bisects.push(bisect);
+            }   
+        }
+
+        // locate angle of pointer in sectors
+        for (var i=0; i<bisects.length; i++) {
+            var j = (i+1)%bisects.length,
+                b1 = bisects[i],
+                b2 = bisects[j];
+            
+            if (b2 < b1) {
+                if (angle < b2 || angle > b1)
+                    closest2 = rays[j][1];
+            } else {
+                if (angle >= b1 && angle < b2) 
+                  closest2 = rays[j][1];
+            }
+        }
+        if (closest2 === undefined) {
+            console.log(angle, b1, b2);
+        }
+
+        return({
+            closest: closest,
+            closest2: closest2
+        });
+    }
 </script>

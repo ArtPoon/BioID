@@ -144,7 +144,7 @@ function numTips(thisnode) {
  * @param {object} tree Return value of readTree
  * @return Array of Objects
  */
-function fortify(tree) {
+function fortify(tree, sort=true) {
     var df = [];
 
     for (const node of preorder(tree)) {
@@ -152,8 +152,9 @@ function fortify(tree) {
             df.push({
                 'parentId': null,
                 'parentLabel': null,
-                'childId': node.id, 
-                'childLabel': node.label, 
+                'thisId': node.id, 
+                'thisLabel': node.label,
+                'children': node.children.map(x=>x.id),
                 'branchLength': 0.,
                 'isTip': (node.children.length==0),
                 'x': node.x,
@@ -165,8 +166,9 @@ function fortify(tree) {
             df.push({
                 'parentId': node.parent.id,
                 'parentLabel': node.parent.label,
-                'childId': node.id, 
-                'childLabel': node.label, 
+                'thisId': node.id, 
+                'thisLabel': node.label, 
+                'children': node.children.map(x=>x.id),
                 'branchLength': node.branchLength,
                 'isTip': (node.children.length==0),
                 'x': node.x,
@@ -174,6 +176,12 @@ function fortify(tree) {
                 'angle': node.angle
             })
         }
+    }
+
+    if (sort) {
+        df = df.sort(function(a, b) {
+            return a.thisId - b.thisId;
+        })
     }
     return(df);
 }
@@ -183,9 +191,9 @@ function edges(df) {
     var result = [],
         parent, pair;
     
-    // sort data frame for direct lookup on childId
-    var dfsort = df.sort(function(a, b) {
-        return a.childId - b.childId;
+    // make sure data frame is sorted
+    df.sort(function(a, b) {
+        return a.thisId - b.thisId;
     })
 
     for (const row of df) {
@@ -194,7 +202,7 @@ function edges(df) {
         if (row.parentId === null) {
             continue  // skip the root
         }
-        parent = dfsort[row.parentId];
+        parent = df[row.parentId];
         if (parent === null) continue;
         pair = {
             x1: row.x, y1: row.y,
@@ -216,7 +224,7 @@ function edges(df) {
 function equalAngleLayout(node) {
     if (node.parent === null) {
         // node is root
-        node.start = 0.;
+        node.start = 0.;  // guarantees no arcs overlap 0
         node.end = 2.; // *pi
         node.angle = 0.;  // irrelevant
         node.ntips = numTips(node);
