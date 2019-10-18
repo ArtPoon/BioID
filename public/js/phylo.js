@@ -98,6 +98,34 @@ function postorder(node, list=[]) {
     return(list);
 }
 
+function levelorder(root) {
+    // aka breadth-first search
+    var queue = [root],
+        result = [],
+        curnode;
+
+    while (queue.length > 0) {
+        curnode = queue.pop();
+        result.push(curnode);
+        for (const child of curnode.children) {
+            queue.push(child);
+        }
+    }
+    return(result);
+}
+
+/**
+ * Count the number of tips that descend from this node
+ * @param {object} thisnode 
+ */
+function numTips(thisnode) {
+    var result = 0;
+    for (const node of levelorder(thisnode)) {
+        if (node.children.length == 0) result++;
+    }
+    return(result);
+}
+
 
 /**
  * Convert parsed Newick tree from readTree() into data 
@@ -128,37 +156,33 @@ function fortify(tree) {
 
 /**
  * Equal-angle layout algorithm for unrooted trees.
- * Ported from ggtree::tree-utilities.R
  */
-function layoutEqualAngle(tree) {
-    var root = tree.id,
-        df = fortify(tree),
-        N = df.length,
-        brlen = Array(df.length);
-
-    // sort rows in ascending order of childId
-    df = df.sort(function(a, b) {
-        return a.childId - b.childId;
-    })
-
-    for (const row of df) {
-        brlen[row.childId] = row.branch_length;
-
-        // initialize new values
-        row.x = null;
-        row.y = null;
-        row.start = null;  // start angle of segment
-        row.end = null;  // end angle
-        row.angle = null;  // orthogonal angle for tip labels
+function equalAngles(node) {
+    if (node.parent === null) {
+        // node is root
+        node.start = 0.;
+        node.end = 2.; // *pi
+        node.angle = 0.;  // irrelevant
+        node.ntips = numTips(node);
     }
 
-    // initialize root values
-    row = df[root];
-    row.x = 0;
-    row.y = 0;
-    row.start = 0;
-    row.end = 2;  // 360 degrees
+    var child,
+        ntips,
+        arc, 
+        lastStart = node.start;
 
-    // get number of tips for each node in tree
+    for (var i=0; i<node.children.length; i++) {
+        child = node.children[i];
+        child.ntips = numTips(child);
 
+        // assign proportion of arc to this child
+        arc = (node.end-node.start) * child.ntips/node.ntips;
+        child.start = lastStart;
+        child.end = child.start + arc;
+        child.angle = child.start + (child.end-child.start)/2.;
+        lastStart = child.end;
+
+        // climb up
+        equalAngles(child);
+    }
 }
