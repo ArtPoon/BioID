@@ -4,7 +4,7 @@
     }
     rect {
         fill: none;
-        cursor: crosshair;
+        cursor: grab;
         pointer-events: all;
     }
 </style>
@@ -105,7 +105,7 @@
     var circle1 = svg.append("circle")
                     .attr("cx", xScale(0))
                     .attr("cy", yScale(0))
-                    .attr("r", 3)
+                    .attr("r", 5)
                     .attr("fill", "red");
     
     var circle2 = svg.append("circle")
@@ -119,12 +119,69 @@
        .attr("height", height)
        .on("mousemove", function() {
            var m = d3.mouse(this),
-               p = closestPoint(m);
-               circle1.attr("cx", xScale(p.closest.x))
-                      .attr("cy", yScale(p.closest.y));
-               circle2.attr("cx", xScale(p.closest2.x))
-                      .attr("cy", yScale(p.closest2.y));
+               p = closestEdge(m);
+               circle1.attr("cx", xScale(p.x))
+                      .attr("cy", yScale(p.y));
        });
+
+
+    // find closest edge to mouse
+    function closestEdge(ptr) {
+        // unpack mouse coordinates
+        var px = ptr[0],
+            py = ptr[1],
+            dx, dy,
+            adj1, adj2,  // adjacent
+            hyp1, hyp2,  // hypoteneuse
+            part, blen,  // partition of branch length
+            dist, mindist = Infinity, 
+            minpart, minblen, closest;
+        
+        for (const e of edgeset) {
+            // first, calculate the hypoteneuse (distance
+            // from ptr to each node)
+            dx = px - xScale(e.x1);
+            dy = py - yScale(e.y1);
+            hyp1 = dx*dx + dy*dy;  // no sqrt
+
+            dx = px - xScale(e.x2);
+            dy = py - yScale(e.y2);
+            hyp2 = dx*dx + dy*dy;  // no sqrt
+
+            // branch length at user scale
+            dx = xScale(e.x1) - xScale(e.x2);
+            dy = yScale(e.y1) - yScale(e.y2);
+            blen = Math.sqrt(dx*dx + dy*dy); 
+
+            // next, calculate branch length part
+            // note we left hyp1 and hyp2 squared
+            part = (hyp1 - hyp2 + blen*blen) / 
+                    (2*blen);
+            if (part < 0 || part > blen) {
+                continue;
+            }
+
+            // finally calculate distance to branch
+            dist = Math.sqrt(hyp1 - part*part);
+            //console.log(part, blen, dist);
+
+            if (dist < mindist) {
+                mindist = dist;
+                minpart = part;  // this is useful
+                minblen = blen;
+                closest = e;
+            }
+        }
+
+        //console.log(mindist, minpart, minblen);
+
+        // solve for coordinates of point on closest edge
+        var p = minpart/minblen;
+        return ({
+            x: (1-p)*closest.x1 + p*closest.x2,
+            y: (1-p)*closest.y1 + p*closest.y2
+        });
+    }
 
     // locate the closest point on tree
     function closestPoint(point) {

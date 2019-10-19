@@ -206,7 +206,8 @@ function edges(df) {
         if (parent === null) continue;
         pair = {
             x1: row.x, y1: row.y,
-            x2: parent.x, y2: parent.y
+            x2: parent.x, y2: parent.y,
+            blen: row.branchLength
         }
         result.push(pair);
     }
