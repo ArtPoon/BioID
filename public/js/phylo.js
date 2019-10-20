@@ -1,13 +1,14 @@
 /**
- * Example Newick string for an unrooted tree from 
+ * Example Newick string for an unrooted tree from
  * Felsenstein (2004), Inferring Phylogenies, p.573
 */
-const example = "((((((A:4,B:4):6,C:5):8,D:6):3,E:21):10,((F:4,G:12):14,H:8):13):13,((I:5,J:2):30,(K:11,L:11):2):17,M:60);";
+//const example = "((((((A:4,B:4):6,C:5):8,D:6):3,E:21):10,((F:4,G:12):14,H:8):13):13,((I:5,J:2):30,(K:11,L:11):2):17,M:60);";
+const example = "(1976:4.607,(1995:3.655,(1996:2.204,1994:1.456):4.521):3.665,(2002:12.688,((2007:0.208,2008:0.538):9.273,2014:20.564):0.269):5.376);";
 
 /**
  * Parse a Newick tree string into a doubly-linked
- * list of JS Objects.  Assigns node labels, branch 
- * lengths and node IDs (numbering terminal before 
+ * list of JS Objects.  Assigns node labels, branch
+ * lengths and node IDs (numbering terminal before
  * internal nodes).
  * @param {string} text Newick tree string.
  * @return {object} Root of tree.
@@ -17,7 +18,7 @@ function readTree(text) {
     text = text.replace(/ \t/g, '');
 
     var tokens = text.split(/(;|\(|\)|,)/),
-        root = {'parent': null, 'children':[]}, 
+        root = {'parent': null, 'children':[]},
         curnode = root,
         nodeId = 0;
 
@@ -29,7 +30,7 @@ function readTree(text) {
         if (token == '(') {
             // add a child to current node
             var child = {
-                'parent': curnode, 
+                'parent': curnode,
                 'children': []
             };
             curnode.children.push(child);
@@ -72,7 +73,7 @@ function readTree(text) {
                 // TODO: handle edge cases with >1 ":"
                 console.warn(token, "I don't know what to do with two colons!");
             }
-            curnode.id = nodeId++;  // assign then increment   
+            curnode.id = nodeId++;  // assign then increment
         }
     }
 
@@ -87,9 +88,9 @@ function readTree(text) {
 //readTree(s);
 
 /**
- * Recursive function for pre-order traversal of tree 
+ * Recursive function for pre-order traversal of tree
  * (output parent before children).
- * @param {object} node 
+ * @param {object} node
  * @param {Array} list An Array of nodes
  * @return An Array of nodes in pre-order
  */
@@ -127,7 +128,7 @@ function levelorder(root) {
 
 /**
  * Count the number of tips that descend from this node
- * @param {object} thisnode 
+ * @param {object} thisnode
  */
 function numTips(thisnode) {
     var result = 0;
@@ -139,7 +140,7 @@ function numTips(thisnode) {
 
 
 /**
- * Convert parsed Newick tree from readTree() into data 
+ * Convert parsed Newick tree from readTree() into data
  * frame.
  * @param {object} tree Return value of readTree
  * @return Array of Objects
@@ -152,7 +153,7 @@ function fortify(tree, sort=true) {
             df.push({
                 'parentId': null,
                 'parentLabel': null,
-                'thisId': node.id, 
+                'thisId': node.id,
                 'thisLabel': node.label,
                 'children': node.children.map(x=>x.id),
                 'branchLength': 0.,
@@ -166,8 +167,8 @@ function fortify(tree, sort=true) {
             df.push({
                 'parentId': node.parent.id,
                 'parentLabel': node.parent.label,
-                'thisId': node.id, 
-                'thisLabel': node.label, 
+                'thisId': node.id,
+                'thisLabel': node.label,
                 'children': node.children.map(x=>x.id),
                 'branchLength': node.branchLength,
                 'isTip': (node.children.length==0),
@@ -190,7 +191,7 @@ function fortify(tree, sort=true) {
 function edges(df) {
     var result = [],
         parent, pair;
-    
+
     // make sure data frame is sorted
     df.sort(function(a, b) {
         return a.thisId - b.thisId;
@@ -205,10 +206,9 @@ function edges(df) {
         parent = df[row.parentId];
         if (parent === null) continue;
         pair = {
-            x1: row.x, y1: row.y,
-            x2: parent.x, y2: parent.y,
-            blen: row.branchLength
-        }
+            x1: row.x, y1: row.y, id1: row.thisId,
+            x2: parent.x, y2: parent.y, id2: row.parentId
+        };
         result.push(pair);
     }
     return(result);
@@ -217,10 +217,10 @@ function edges(df) {
 
 /**
  * Equal-angle layout algorithm for unrooted trees.
- * Populates the nodes of a tree object with information on 
- * the angles to draw branches such that they do not 
+ * Populates the nodes of a tree object with information on
+ * the angles to draw branches such that they do not
  * intersect.
- * @param {object} node 
+ * @param {object} node
  */
 function equalAngleLayout(node) {
     if (node.parent === null) {
@@ -251,16 +251,8 @@ function equalAngleLayout(node) {
         // map to coordinates
         child.x = node.x + child.branchLength * Math.sin(child.angle*Math.PI);
         child.y = node.y + child.branchLength * Math.cos(child.angle*Math.PI);
-   
+
         // climb up
         equalAngleLayout(child);
     }
-}
-
-
-function equalDaylight(tree) {
-    // get starting tree
-    equalAngleLayout(tree);
-
-
 }
