@@ -99,16 +99,18 @@ svg.append("rect")
    .on("mousemove", function() {
        if (mouseDown) {
         var m = d3.mouse(this),
-           p = closestEdge(m);
-           // move the root
-           circle1.attr("cx", xScale(p.x))
-                  .attr("cy", yScale(p.y));
+            p = closestEdge(m),
+            rootedTree;
 
-           // update edge set
-           rerootTree(p);
+         // move the root
+         circle1.attr("cx", xScale(p.x))
+                .attr("cy", yScale(p.y));
 
-           // update rooted tree
-           //drawRootedTree();
+         // update nodes
+         rootedTree = rerootTree(p);
+
+         // update rooted tree
+         drawRootedTree(rootedTree);
        }
    });
 
@@ -206,8 +208,8 @@ yScale.domain([d3.min(data, yValue)-1, d3.max(data, yValue)+1])
 
 
 function rerootTree(p) {
-  var result = JSON.parse(JSON.stringify(data)),  // deep copy
-      row, root;
+  var nodes = JSON.parse(JSON.stringify(data)),  // deep copy
+      row, parent, root, blen;
 
   root = {
     angle: 0,  // unused...
@@ -215,27 +217,64 @@ function rerootTree(p) {
     children: [p.parent, p.child],
     parentId: undefined,
     parentLabel: undefined,
-    thisId: data.length,
+    thisId: nodes.length,
     thisLabel: "root",
     x: p.x,
     y: p.y
   };
-  result.push(root);
-
-  row = data[p.parent];
-  row.parentId = root.thisId;
-  row.parentLabvel = root.thisLabel;
-
-  row = data[p.child];
-  row.parentId = root.thisId;
-  row.parentLabvel = root.thisLabel;
+  nodes.push(root);
 
   // redirect flow from root (i.e., some parents become children)
-  
+  var lastRoot = nodes[nodes.length-2];
+  if (lastRoot.parentId !== null) {
+    console.log(nodes);
+    alert("rerootTree(): failed to locate previous root");
+  }
+  row = nodes[p.parent];
+  while (true) {
+    parent = row.parentId;
+    parent.parentId = row.thisId;
+    if (parent == lastRoot.thisId) {
+      break;
+    }
+    row = parent;
+  }
+
+  row.parentId = root.thisId;
+  row.parentLabel = root.thisLabel;
+  blen = row.branchLength;
+  row.branchLength = blen*(1-p.p);
+
+  row = nodes[p.child];
+  row.parentId = root.thisId;
+  row.parentLabel = root.thisLabel;
+  row.branchLength = blen*p.p;
+
+  return(nodes);
 }
 
 
-function drawRootedTree() {
+function nodeDepth(idx, nodes) {
+  var node = nodes[idx],
+      parent;
+
+  if (node.parentId === null) {
+    // root
+    node.depth = 0;
+  } else {
+    parent = nodes[node.parentId];
+    node.depth = parent.depth + node.branchLength;
+  }
+
+  for (const child of node.children) {
+    nodeDepth(child, nodes);
+  }
+}
+
+function drawRootedTree(nodes) {
+  // calculate node depths
+  nodeDepth(nodes);
+  
   var circle2 = svg2.append("circle")
       .attr("cx", xScale(0))
       .attr("cy", yScale(0))
