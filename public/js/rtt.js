@@ -211,14 +211,15 @@ function rerootTree(p) {
   var nodes = JSON.parse(JSON.stringify(data)),  // deep copy
       row, parent, root, blen;
 
+  // append root node to array
   root = {
-    angle: 0,  // unused...
-    branchLength: 0.,
-    children: [p.parent, p.child],
     parentId: undefined,
     parentLabel: undefined,
     thisId: nodes.length,
     thisLabel: "root",
+    children: [p.parent, p.child],
+    angle: 0,
+    branchLength: 0.,
     x: p.x,
     y: p.y
   };
@@ -230,17 +231,25 @@ function rerootTree(p) {
     console.log(nodes);
     alert("rerootTree(): failed to locate previous root");
   }
+
+  // P2 ---> *P* ---> [root] ---> C
   row = nodes[p.parent];
   while (true) {
-    parent = row.parentId;
-    parent.parentId = row.thisId;
-    if (parent == lastRoot.thisId) {
+    parent = nodes[row.parentId];
+    parent.parentId = row.thisId;  // P2 <-- P
+    parent.children.splice(parent.children.indexOf(row.thisId), 1);
+
+    // stopping criterion
+    if (parent.thisId == lastRoot.thisId) {
       break;
     }
     row = parent;
   }
 
+  // P <-- [root]
   row.parentId = root.thisId;
+  //row.children.splice(row.children.indexOf(p.child), 1);
+  //root.children.push(p.child);
   row.parentLabel = root.thisLabel;
   blen = row.branchLength;
   row.branchLength = blen*(1-p.p);
@@ -255,10 +264,13 @@ function rerootTree(p) {
 
 
 function nodeDepth(idx, nodes) {
+  /*
+   *  Calculate the distance of each node from the root.
+   */
   var node = nodes[idx],
       parent;
 
-  if (node.parentId === null) {
+  if (node.parentId === undefined) {
     // root
     node.depth = 0;
   } else {
@@ -271,10 +283,37 @@ function nodeDepth(idx, nodes) {
   }
 }
 
+
+function postOrderByIndex(idx, nodes, list=[]) {
+    var node = nodes[idx];
+
+    for (const childIdx of node.children) {
+        list = postOrderByIndex(childIdx, nodes, list);
+    }
+    list.push(node);
+    return(list);
+}
+
+
 function drawRootedTree(nodes) {
-  // calculate node depths
-  nodeDepth(nodes);
+  console.log(nodes);
   
+  var rootIdx = nodes.length-1;
+
+  // calculate node depths
+  nodeDepth(rootIdx, nodes);
+
+  // order tips by postorder traversal
+  var orderedNodes = [];
+  postOrderByIndex(rootIdx, nodes, orderedNodes);
+  //console.log(orderedNodes);
+
+  var tips = orderedNodes.filter(node=>node.isTip),
+      ntips = tips.length;
+  for (var i=0; i<ntips; i++) {
+
+  }
+
   var circle2 = svg2.append("circle")
       .attr("cx", xScale(0))
       .attr("cy", yScale(0))
