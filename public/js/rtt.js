@@ -296,17 +296,17 @@ function postOrderByIndex(idx, nodes, list=[]) {
 
 
 function drawRootedTree(nodes) {
-  console.log(nodes);
-  
   var rootIdx = nodes.length-1;
+
 
   // calculate node depths
   nodeDepth(rootIdx, nodes);
+  console.log(nodes);
 
   // order tips by postorder traversal
   var orderedNodes = [];
   postOrderByIndex(rootIdx, nodes, orderedNodes);
-  //console.log(orderedNodes);
+  console.log(orderedNodes);
 
   var tips = orderedNodes.filter(node=>node.isTip),
       ntips = tips.length;
