@@ -189,22 +189,9 @@ var svg2 = d3.select("div#rooted")
              .attr("width", width2)
              .attr("height", height2)
              .append("g");
-/*
-// set up plotting scales
-var xValue = function(d) { return d.x; },
-    xScale = d3.scale.linear().range([0, width]),
-    xMap = function(d) { return xScale(xValue(d)); },
-    xAxis = d3.svg.axis().scale(xScale).orient("bottom");
 
-var yValue = function(d) { return d.y; },
-    yScale = d3.scale.linear().range([height, 0]),
-    yMap = function(d) { return yScale(yValue(d)); },
-    yAxis = d3.svg.axis().scale(yScale).orient("left");
-
-xScale.domain([d3.min(data, xValue)-1, d3.max(data, xValue)+1])
-yScale.domain([d3.min(data, yValue)-1, d3.max(data, yValue)+1])
-*/
-
+var xScale2 = d3.scale.linear().range([0, width]),
+    yScale2 = d3.scale.linear().range([height, 0]);
 
 
 function rerootTree(p) {
@@ -286,13 +273,27 @@ function nodeDepth(idx, nodes) {
 
 
 function postOrderByIndex(idx, nodes, list=[]) {
-    var node = nodes[idx];
+  var node = nodes[idx];
+  for (const childIdx of node.children) {
+    list = postOrderByIndex(childIdx, nodes, list);
+  }
+  list.push(node);
+  return(list);
+}   
 
-    for (const childIdx of node.children) {
-        list = postOrderByIndex(childIdx, nodes, list);
-    }
-    list.push(node);
-    return(list);
+function getTips(nodeIndex, nodes) {
+  var node = nodes[nodeIndex],
+      child;
+  if (node.isTip) {
+    node.y = [node.y];
+    return(node.y);
+  }
+  
+  node.y = [];
+  for (const childIdx of node.children) {
+    node.y = node.y.concat(getTips(childIdx, nodes));
+  }
+  return(node.y);
 }
 
 
@@ -309,13 +310,37 @@ function drawRootedTree(nodes) {
   var tips = orderedNodes.filter(node=>node.isTip),
       ntips = tips.length;
   for (var i=0; i<ntips; i++) {
-    tips[i].y = i/ntips;
+    tips[i].y = (i+0.5)/ntips;  // this is carried over to nodes
   }
 
-  // ancestors should be located at mean of child nodes
-  var queue = [];
-  while (true) {
-
+  // calculate vertical location of internal nodes
+  getTips(rootIdx, nodes);
+  for (var node of nodes) {
+    var temp = 0;
+    for (const y of node.y) {
+      temp += y;
+    }
+    node.y = temp / node.y.length;
   }
+  
+
+  xScale2.domain([
+    d3.min(nodes, xValue), d3.max(nodes, xValue)
+  ]);
+  yScale2.domain([
+    d3.min(nodes, yValue), d3.max(nodes, yValue)
+  ]);
+
+   // draw points
+  svg2.selectAll(".dot")
+      .data(nodes)
+      .enter().append("circle")
+      .attr("class", "dot")
+      .attr("r", 5)
+      .attr("cx", xMap)
+      .attr("cy", yMap)
+      .attr("stroke", "black")
+      .attr("stroke-width", 2)
+      .attr("fill", "white");
 
 }
