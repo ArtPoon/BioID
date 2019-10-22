@@ -104,7 +104,7 @@ function preorder(node, list=[]) {
 
 function postorder(node, list=[]) {
     for (var i=0; i < node.children.length; i++) {
-        list = preorder(node.children[i], list);
+        list = postorder(node.children[i], list);
     }
     list.push(node);
     return(list);

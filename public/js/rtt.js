@@ -272,13 +272,14 @@ function nodeDepth(idx, nodes) {
 
   if (node.parentId === undefined) {
     // root
-    node.depth = 0;
+    node.x = 0;
   } else {
     parent = nodes[node.parentId];
-    node.depth = parent.depth + node.branchLength;
+    node.x = parent.x + node.branchLength;
   }
 
   for (const child of node.children) {
+    // recursion
     nodeDepth(child, nodes);
   }
 }
@@ -298,25 +299,23 @@ function postOrderByIndex(idx, nodes, list=[]) {
 function drawRootedTree(nodes) {
   var rootIdx = nodes.length-1;
 
-
   // calculate node depths
   nodeDepth(rootIdx, nodes);
-  console.log(nodes);
 
   // order tips by postorder traversal
   var orderedNodes = [];
   postOrderByIndex(rootIdx, nodes, orderedNodes);
-  console.log(orderedNodes);
 
   var tips = orderedNodes.filter(node=>node.isTip),
       ntips = tips.length;
   for (var i=0; i<ntips; i++) {
+    tips[i].y = i/ntips;
+  }
+
+  // ancestors should be located at mean of child nodes
+  var queue = [];
+  while (true) {
 
   }
 
-  var circle2 = svg2.append("circle")
-      .attr("cx", xScale(0))
-      .attr("cy", yScale(0))
-      .attr("r", 5)
-      .attr("fill", "blue");
 }
