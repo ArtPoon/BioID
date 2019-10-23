@@ -108,9 +108,9 @@ svg.append("rect")
 
          // update nodes
          rootedTree = rerootTree(p);
-
+         console.log(rootedTree);
          // update rooted tree
-         drawRootedTree(rootedTree);
+         //drawRootedTree(rootedTree);
        }
    });
 
@@ -162,18 +162,13 @@ function closestEdge(ptr) {
         }
     }
 
-    //console.log(mindist, minpart, minblen);
-
     // solve for coordinates of point on closest edge
     var p = minpart/minblen;
-
-    // TODO: update edges with (1) distance from root
-    // (2) new edge induced by rooting
 
     return ({
         x: (1-p)*closest.x1 + p*closest.x2,
         y: (1-p)*closest.y1 + p*closest.y2,
-        p: p, parent: closest.id1, child: closest.id2
+        p: p, child: closest.id1, parent: closest.id2
     });
 }
 
@@ -196,7 +191,7 @@ var xScale2 = d3.scale.linear().range([0, width]),
 
 function rerootTree(p) {
   var nodes = JSON.parse(JSON.stringify(data)),  // deep copy
-      row, parent, root, blen;
+      row, parent, child, root, blen;
 
   // append root node to array
   root = {
@@ -212,39 +207,39 @@ function rerootTree(p) {
   };
   nodes.push(root);
 
-  // redirect flow from root (i.e., some parents become children)
-  var lastRoot = nodes[nodes.length-2];
-  if (lastRoot.parentId !== null) {
-    console.log(nodes);
-    alert("rerootTree(): failed to locate previous root");
-  }
-
-  // P2 ---> *P* ---> [root] ---> C
-  row = nodes[p.parent];
-  while (true) {
-    parent = nodes[row.parentId];
-    parent.parentId = row.thisId;  // P2 <-- P
-    parent.children.splice(parent.children.indexOf(row.thisId), 1);
-
-    // stopping criterion
-    if (parent.thisId == lastRoot.thisId) {
-      break;
-    }
-    row = parent;
-  }
-
-  // P <-- [root]
-  row.parentId = root.thisId;
-  //row.children.splice(row.children.indexOf(p.child), 1);
-  //root.children.push(p.child);
-  row.parentLabel = root.thisLabel;
-  blen = row.branchLength;
-  row.branchLength = blen*(1-p.p);
-
+  // root becomes parent of child node
   row = nodes[p.child];
   row.parentId = root.thisId;
   row.parentLabel = root.thisLabel;
+  blen = row.branchLength;
   row.branchLength = blen*p.p;
+
+  // reverse flow from parent node to original root
+  row = nodes[p.parent];
+  var queue = [p.parent];
+  while (row.thisId != (nodes.length-2)) {
+    parent = row.parentId;
+    queue.push(parent);
+    row = nodes[parent];
+  }
+  // now, starting from the root...
+  for (var i=queue.length; i>1; i--) {
+    parent = nodes[queue[i-1]];
+    child = nodes[queue[i-2]];
+
+    child.children.push(parent.thisId);
+    parent.parentId = child.thisId;
+    parent.children.splice(parent.children.indexOf(child.thisId), 1);
+  }
+
+  // root becomes parent of parent node
+  row = nodes[p.parent];
+  row.parentId = root.thisId;
+  row.parentLabel = root.thisLabel;
+  row.branchLength = blen*(1-p.p);
+
+  // child node removed from parent node's children
+  row.children.splice(row.children.indexOf(p.child), 1);
 
   return(nodes);
 }
@@ -279,7 +274,7 @@ function postOrderByIndex(idx, nodes, list=[]) {
   }
   list.push(node);
   return(list);
-}   
+}
 
 function getTips(nodeIndex, nodes) {
   var node = nodes[nodeIndex],
@@ -288,7 +283,7 @@ function getTips(nodeIndex, nodes) {
     node.y = [node.y];
     return(node.y);
   }
-  
+
   node.y = [];
   for (const childIdx of node.children) {
     node.y = node.y.concat(getTips(childIdx, nodes));
@@ -312,6 +307,7 @@ function drawRootedTree(nodes) {
   for (var i=0; i<ntips; i++) {
     tips[i].y = (i+0.5)/ntips;  // this is carried over to nodes
   }
+  return;
 
   // calculate vertical location of internal nodes
   getTips(rootIdx, nodes);
@@ -322,7 +318,7 @@ function drawRootedTree(nodes) {
     }
     node.y = temp / node.y.length;
   }
-  
+
 
   xScale2.domain([
     d3.min(nodes, xValue), d3.max(nodes, xValue)
