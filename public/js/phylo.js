@@ -188,7 +188,7 @@ function fortify(tree, sort=true) {
 }
 
 
-function edges(df) {
+function edges(df, rectangular=false) {
     var result = [],
         parent, pair;
 
@@ -204,12 +204,27 @@ function edges(df) {
             continue  // skip the root
         }
         parent = df[row.parentId];
-        if (parent === null) continue;
-        pair = {
-            x1: row.x, y1: row.y, id1: row.thisId,
-            x2: parent.x, y2: parent.y, id2: row.parentId
-        };
-        result.push(pair);
+        if (parent === null || parent === undefined) continue;
+
+        if (rectangular) {
+          var pair = {
+              x1: row.x, y1: row.y, id1: row.thisId,
+              x2: parent.x, y2: row.y, id2: undefined
+          };
+          result.push(pair);
+          var pair = {
+              x1: parent.x, y1: row.y, id1: undefined,
+              x2: parent.x, y2: parent.y, id2: row.parentId
+          };
+          result.push(pair);
+        }
+        else {
+          var pair = {
+              x1: row.x, y1: row.y, id1: row.thisId,
+              x2: parent.x, y2: parent.y, id2: row.parentId
+          };
+          result.push(pair);
+        }
     }
     return(result);
 }

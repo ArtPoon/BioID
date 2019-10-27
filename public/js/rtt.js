@@ -136,7 +136,7 @@ svg.append("rect")
          // update nodes
          rootedTree = rerootTree(p);
          rootedLayout(rootedTree);
-         console.log(rootedTree);
+         //console.log(rootedTree);
 
          // update rooted tree
          updateRootedTree(rootedTree);
@@ -377,7 +377,8 @@ function updateRootedTree(nodes) {
 
   svg2.selectAll(".dot")
       .data(nodes)
-      .transition().duration(500)
+      .transition().duration(100)
       .attr("cx", x2Map)
-      .attr("cx", y2Map)
+      .attr("cy", y2Map)
+      
 }
