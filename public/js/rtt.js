@@ -1,14 +1,14 @@
 var margin = {top: 10, right: 10, bottom: 10, left: 10},
-    width = 500,
-    height = 500,
+    width = 400,
+    height = 400,
     svg = d3.select("div#unrooted")
             .append("svg")
             .attr("width", width)
             .attr("height", height)
             .append("g");
 
-var width2 = 500,
-    height2 = 500;
+var width2 = 400,
+    height2 = 400;
 
 var svg2 = d3.select("div#rooted")
              .append("svg")
@@ -36,10 +36,14 @@ var yValue = function(d) { return d.y; },
 // set up plotting scales
 var x2Scale = d3.scale.linear().range([0, width2]),  // map domain to range
     x2Map = function(d) { return x2Scale(xValue(d)); },
+    x2Map1 = function(d) { return x2Scale(d.x1); },
+    x2Map2 = function(d) { return x2Scale(d.x2); },
     x2Axis = d3.svg.axis().scale(x2Scale).orient("bottom");  // draw axis
 
 var y2Scale = d3.scale.linear().range([height2, 0]),
     y2Map = function(d) { return y2Scale(yValue(d)); },
+    y2Map1 = function(d) { return y2Scale(d.y1); },
+    y2Map2 = function(d) { return y2Scale(d.y2); },
     y2Axis = d3.svg.axis().scale(y2Scale).orient("left");
 
 
@@ -284,9 +288,41 @@ function nodeDepth(idx, nodes) {
 }
 
 
+function countTips(idx, nodes) {
+  // recursive function to annotate nodes with number of tips
+  var node = nodes[idx],
+      child;
+
+  if (node.isTip) {
+    node.ntips = 1;
+  }
+  else {
+    node.ntips = 0;
+    for (const childIdx of node.children) {
+      node.ntips += countTips(childIdx, nodes);
+    }
+  }
+  return (node.ntips);
+}
+
 function postOrderByIndex(idx, nodes, list=[]) {
-  var node = nodes[idx];
+  // recursive function to generate a list of node indices
+  // that orders children before parents
+  var node = nodes[idx],
+      temp = [],
+      child;
+
+  // sort children by number of tips
   for (const childIdx of node.children) {
+    child = nodes[childIdx];
+    temp.push(child);
+  }
+  temp.sort(function(a, b) {
+      return a.ntips - b.ntips;
+  })
+
+  for (const childIdx of temp.map(x=>x.thisId)) {
+    // append child indices to list
     list = postOrderByIndex(childIdx, nodes, list);
   }
   list.push(node);
@@ -294,6 +330,8 @@ function postOrderByIndex(idx, nodes, list=[]) {
 }
 
 function getTips(nodeIndex, nodes) {
+  // recursive function to annotate nodes with the
+  // y-position of tips
   var node = nodes[nodeIndex],
       child;
   if (node.isTip) {
@@ -319,6 +357,9 @@ function rootedLayout(nodes) {
   // calculate node depths - populates node.x
   nodeDepth(rootIdx, nodes);
 
+  // count tips per nodes to ladderize tree
+  countTips(rootIdx, nodes);
+
   // order tips by postorder traversal
   var orderedNodes = [];
   postOrderByIndex(rootIdx, nodes, orderedNodes);
@@ -342,17 +383,20 @@ function rootedLayout(nodes) {
 
 
 function drawRootedTree(nodes) {
+  // update SVG with rooted tree layout
   // @param nodes: return value from rootedLayout()
+  var rootedEdges = edges(nodes, rectangular=true);
+
 
   x2Scale.domain([
-    d3.min(nodes, xValue)-10, d3.max(nodes, xValue)+10
+    d3.min(nodes, xValue)-1, d3.max(nodes, xValue)+1
   ]);
   y2Scale.domain([
     d3.min(nodes, yValue)-0.1, d3.max(nodes, yValue)+0.1
   ]);
 
-   // draw points
-  var points = svg2.selectAll(".dot")
+  /*
+  svg2.selectAll(".dot")
       .data(nodes)
       .enter().append("circle")
       .attr("class", "dot")
@@ -362,10 +406,26 @@ function drawRootedTree(nodes) {
       .attr("stroke", "black")
       .attr("stroke-width", 2)
       .attr("fill", "white");
+  */
+
+  // draw lines
+  svg2.selectAll("lines")
+      .data(rootedEdges)
+      .enter().append("line")
+      .attr("class", "lines")
+      .attr("x1", x2Map1)
+      .attr("y1", y2Map1)
+      .attr("x2", x2Map2)
+      .attr("y2", y2Map2)
+      .attr("stroke-width", 3)
+      .attr("stroke", "#777");
 }
+
 
 function updateRootedTree(nodes) {
   // call to update
+  var rootedEdges = edges(nodes, rectangular=true);
+  //console.log(rootedEdges);
 
   // update svg2 domain
   x2Scale.domain([
@@ -375,10 +435,22 @@ function updateRootedTree(nodes) {
     d3.min(nodes, yValue)-0.1, d3.max(nodes, yValue)+0.1
   ]);
 
+  /*
   svg2.selectAll(".dot")
       .data(nodes)
       .transition().duration(100)
       .attr("cx", x2Map)
-      .attr("cy", y2Map)
-      
+      .attr("cy", y2Map);
+  */
+
+  svg2.selectAll(".lines")
+      .data(rootedEdges)
+      .transition().duration(100)
+      .ease('linear')
+      .attr("x1", x2Map1)
+      .attr("y1", y2Map1)
+      .attr("x2", x2Map2)
+      .attr("y2", y2Map2);
+
+  //svg2.selectAll("")
 }
