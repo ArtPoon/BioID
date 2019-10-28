@@ -52,21 +52,6 @@ This undergraduate course is designed to cover a broad domain of bioinformatics 
    * novel pathogens
 
 
-## Papers and data sets
-
-| Section | Title (URL) | Data set |
-|---------|-------------|----------|
-| 1       |             |          |
-| 2       | [Sequence-Based Prediction of Type III Secreted Proteins](http://journals.plos.org/plospathogens/article?id=10.1371/journal.ppat.1000376)   |          |
-| 3 | [Whole-genome sequencing for analysis of an outbreak of meticillin-resistant Staphylococcus aureus: a descriptive study](https://www.sciencedirect.com/science/article/pii/S1473309912702773) |  |
-| 4 | [Reduced diversity of faecal microbiota in Crohn’s disease revealed by a metagenomic approach](https://gut.bmj.com/content/gutjnl/55/2/205.full.pdf) | [FASTA](data/Manichanh-Crohns.fa) [FASTA](data/Manichanh-healthy.fa) |
-| 5 | [The first T cell response to transmitted/founder virus contributes to the control of acute viremia in HIV-1 infection](http://jem.rupress.org/content/206/6/1253.full) | [FASTA](data/Fraser.gb) |
-| 6 | [Out-of-Africa migration and Neolithic coexpansion of Mycobacterium tuberculosis with modern humans](https://www.nature.com/articles/ng.2744) |  |
-| 7 | [Pandemic Potential of a Strain of Influenza A (H1N1): Early Findings](http://science.sciencemag.org/content/sci/early/2009/05/14/science.1176062.full.pdf) |   |
-| 8 | [The primary transcriptome of the major human pathogen Helicobacter pylori](https://www.nature.com/articles/nature08756) |   |
-| 9 | [A highly abundant bacteriophage discovered in the unknown sequences of human faecal metagenomes](https://www.nature.com/articles/ncomms5498) |   |
-
-
 ## GitHub repository
 
 All code used to implement this website can be obtained on [GitHub]({{ site.github_repo }}).
