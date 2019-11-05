@@ -47,6 +47,9 @@ var y2Scale = d3.scale.linear().range([height2, 0]),
     y2Axis = d3.svg.axis().scale(y2Scale).orient("left");
 
 
+// color palette
+var palette = d3.scale.category20();
+
 var tree = readTree(example);
 equalAngleLayout(tree);
 
@@ -90,14 +93,20 @@ svg.selectAll("lines")
     .data(data)
     .enter().append("circle")
     .attr("class", "dot")
-    .attr("r", 5)
+    .attr("r", function(d) {
+      if (d.isTip) {
+        return(6);
+      } else {
+        return(4);
+      }
+    })
     .attr("cx", xMap)
     .attr("cy", yMap)
     .attr("stroke", "black")
     .attr("stroke-width", 2)
     .attr("fill", function(d) {
       if (d.isTip) {
-        return("#777");
+        return(palette(d.thisId));
       } else {
         return("white");
       };
@@ -105,12 +114,14 @@ svg.selectAll("lines")
 
 // TODO: draw tip labels (years)
 
-// add circle
+// draw the meatball
 var circle1 = svg.append("circle")
                 .attr("cx", xScale(0))
                 .attr("cy", yScale(0))
                 .attr("r", 10)
-                .attr("fill", "red");
+                .attr("stroke", "black")
+                .attr("stroke-width", 2)
+                .attr("fill", "gold");
 
 // draw initial rooted tree
 var rootedTree = rerootTree( closestEdge([xScale(0), yScale(0)]) );
@@ -129,7 +140,7 @@ svg.append("rect")
    .attr("height", height)
    .on("mousemove", function() {
        if (mouseDown) {
-        var m = d3.mouse(this),
+        var m = d3.mouse($("rect")[0]),
             p = closestEdge(m),
             rootedTree;
 
@@ -395,18 +406,6 @@ function drawRootedTree(nodes) {
     d3.min(nodes, yValue)-0.1, d3.max(nodes, yValue)+0.1
   ]);
 
-  /*
-  svg2.selectAll(".dot")
-      .data(nodes)
-      .enter().append("circle")
-      .attr("class", "dot")
-      .attr("r", 5)
-      .attr("cx", x2Map)
-      .attr("cy", y2Map)
-      .attr("stroke", "black")
-      .attr("stroke-width", 2)
-      .attr("fill", "white");
-  */
 
   // draw lines
   svg2.selectAll("lines")
@@ -418,7 +417,31 @@ function drawRootedTree(nodes) {
       .attr("x2", x2Map2)
       .attr("y2", y2Map2)
       .attr("stroke-width", 3)
-      .attr("stroke", "#777");
+      .attr("stroke", "#777")
+      .attr("stroke-linecap", "square");
+
+  svg2.selectAll(".dot")
+      .data(nodes)
+      .enter().append("circle")
+      .attr("class", "dot")
+      .attr("r", function(d) {
+        if (d.isTip) {
+          return(6);
+        } else {
+          return(4);
+        }
+      })
+      .attr("cx", x2Map)
+      .attr("cy", y2Map)
+      .attr("stroke", "black")
+      .attr("stroke-width", 2)
+      .attr("fill", function(d) {
+        if (d.isTip) {
+          return(palette(d.thisId));
+        } else {
+          return("white");
+        }
+      });
 }
 
 
@@ -452,5 +475,11 @@ function updateRootedTree(nodes) {
       .attr("x2", x2Map2)
       .attr("y2", y2Map2);
 
+  svg2.selectAll(".dot")
+      .data(nodes)
+      .transition().duration(100)
+      .ease('linear')
+      .attr("cx", x2Map)
+      .attr("cy", y2Map);
   //svg2.selectAll("")
 }

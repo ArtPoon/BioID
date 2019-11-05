@@ -19,7 +19,7 @@
     stroke-width: .5;
     font-size: 14px;
   }
-  
+
   table {
     font-size: 12px;
   }
@@ -34,8 +34,8 @@
 </div>
 
 
-<script src="{{ site.baseurl }}/public/js/d3.v3.min.js"></script>
-<script src="{{ site.baseurl }}/public/js/jquery.min.js"></script>
+<!-- <script src="{{ site.baseurl }}/public/js/d3.v3.min.js"></script> -->
+<!-- <script src="{{ site.baseurl }}/public/js/jquery.min.js"></script> -->
 <!--<script src="/public/js/math.min.js"></script>-->
 
 <script>
@@ -99,7 +99,7 @@ function myGraph() {
         var link;
         for (var i = 0; i < links.length; i++) {
             link = links[i];
-            if ((link.source.id == source && link.target.id == target) || 
+            if ((link.source.id == source && link.target.id == target) ||
                 (link.source.id == target && link.target.id == source)) {
                 links.splice(i, 1);
                 break;
@@ -108,7 +108,7 @@ function myGraph() {
         // if no matching edge, no big deal
         update();
     };
-    
+
     this.removeLinkToNode = function(target) {
       var link,
           parent;
@@ -198,7 +198,7 @@ var update = function() {
         .data(nodes, function(d) {
             return d.id;
         });
-    
+
     node.append("text")
         .attr("dx", 12)
         .attr("dy", ".35em")
@@ -214,7 +214,7 @@ var update = function() {
         .attr("class", "nodeStrokeClass");
 
     node.exit().remove();
-    
+
     node.select("circle")
         .style("fill", "#fff")
         .style("stroke", "#aaa")
@@ -262,18 +262,18 @@ function reset () {
     $('#step_btn').removeAttr('disabled');
     graph.removeAllLinks();
     graph.removeAllNodes();
-    
+
     d3.text("{{ site.baseurl }}/data/nj-example.csv").get(function(error, rows) {
       stage = 0;
       csvdata = d3.csv.parseRows(rows);
       headers = csvdata[0];
       var n = headers.length;
       node_names = headers.slice(1, n);
-               
+
       if (csvdata.length != n) {
         console.warn("Not a square matrix!");
       }
-      
+
       // convert array into Object
       var sum = 0;
       dists = Array(n-1);
@@ -287,9 +287,9 @@ function reset () {
         }
       }
       scaling_factor = sum / (n*(n-1)/2);
-      
+
       tabulate();
-      
+
       // initialize graph
       graph.addNode("root", 0.1);
       for (var i=1; i<n; i++) {
@@ -308,18 +308,18 @@ function tabulate () {
   var tbl = d3.select("div#csvtable")
     .html("")  // wipe out previous contents
     .append('table');
-    
+
   tbl.append('thead').append('tr')
       .selectAll('th')
       .data(node_names).enter()
       .append('th')
       .text(function(d) { return d; });
-      
+
   tbl.append('tbody')
     .selectAll('tr')
       .data(dists).enter()
       .append('tr')
-    
+
     .selectAll('td')
       .data(function(d) { return d; }).enter()
       .append('td')
@@ -338,12 +338,12 @@ function keepNodesOnTop() {
 
 
 function njoin() {
-    /* 
-     Determine which nodes to join next based on their 
+    /*
+     Determine which nodes to join next based on their
      distances.
      */
     var n = dists.length;
-    
+
     // compute u
     var u = Array(n);
     for (var i=0; i<n; i++) {
@@ -354,7 +354,7 @@ function njoin() {
       }
       u[i] = sum/(n-2);  // zero-indexing for vector
     }
-    
+
     // choose i,j that minimizes D(i,j)-u(i)-u(j)
     var min_i, min_j, val, min_value = Infinity;
     for (var i=0; i<n; i++) {
@@ -367,11 +367,11 @@ function njoin() {
         }
       }
     }
-    
+
     // calculate branch lengths of (i) and (j) to new node
     var v_i = dists[min_i][min_j]/2 + (u[min_i]-u[min_j])/2,
         v_j = dists[min_i][min_j]/2 + (u[min_j]-u[min_i])/2;
-    
+
     return {'i': min_i, 'j': min_j, 'v_i': v_i, 'v_j': v_j};
 }
 
@@ -383,23 +383,23 @@ function nextStage() {
    Perform one iteration of neighbor-joining algorithm.
    */
   var ntips = csvdata.length-1;
-  
+
   if (stage < ntips-3) {
     var neighbors = njoin();
     var i = neighbors.i,
         j = neighbors.j;
-    
+
     // concatenate new node name
     new_node = node_names[i] + node_names[j];
     node_names.push(new_node);
     graph.addNode(new_node, 0.1);
     //console.log(new_node);
-    
-    
+
+
     // calculate distance from new node (ij) to remaining nodes
     var n = dists.length;
     var new_row = Array(n);
-    
+
     for (var k = 0; k<n; k++) {
       if (k==i || k==j) {
         continue;
@@ -410,18 +410,18 @@ function nextStage() {
     new_row.push(0);  // distance to self
     dists.push(new_row);
 
-    
+
     // remove branches from unknown parent to i and j
     parent = graph.removeLinkToNode(node_names[i]);
     parent = graph.removeLinkToNode(node_names[j]);
     //console.log(parent);
-    
+
     // add branches from new node to i and j
     graph.addLink(new_node, node_names[i], neighbors.v_i / scaling_factor);
     graph.addLink(new_node, node_names[j], neighbors.v_j / scaling_factor);
     graph.addLink(parent, new_node, 0.1);
-    
-    
+
+
     // delete rows i and j from array
     if (i > j) {
       // do higher index to preserve indexing
@@ -443,7 +443,7 @@ function nextStage() {
       }
     }
 
-    
+
     // remove merged nodes
     if (neighbors.i < neighbors.j) {
       node_names.splice(neighbors.j, 1);
@@ -452,9 +452,9 @@ function nextStage() {
       node_names.splice(neighbors.i, 1);
       node_names.splice(neighbors.j, 1);
     }
-    
+
     tabulate();
-    
+
     stage = stage + 1;
     // deactivate Step! button
     if (stage == ntips-3) {
@@ -467,8 +467,3 @@ function nextStage() {
 
 
 </script>
-
-
-
-
-
