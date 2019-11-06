@@ -4,45 +4,63 @@ title: Building trees
 ---
 
 
-
+<!-- Table of contents -->
 {% include toc.html %}
+
+<!-- Required for d3 animations -->
 {% include loadD3.html %}
 
 
 ## What is a phylogeny?
 
-A phylogeny is a tree that represents how different populations are related by their common ancestors back in time.
+A phylogeny is a hypothesis about how different populations are related by their common ancestors back in time.
+Phylogenies are usually expressed as trees.
 Each population is represented by a tip of the tree.
-To me, it is important to clarify that each tip represents a population, which encompasses a species or an infection, and not a single individual.
-A tree that relates individuals instead of populations should be referred to as a *geneaology*, not a phylogeny.
-The rationale is that individuals do not evolve - populations do.
+These tips are connected by the branches that comprise the tree.
+If we follow two branches from their respective tips down toward the base of the tree, we will eventually encounter a point at which those branches converge.
+This branching point is often called a *node* or a *split*, and it represents the common ancestor of the tips.
+
+
+>To me, it is important to clarify that each tip represents a population, which encompasses a species or an infection, and not a single individual.
+A tree that relates individuals instead of populations should be referred to as a *genealogy*, not a phylogeny.
 Although the descent of individuals from their ancestors can also be represented by a tree, there is no evolutionary process unfolding along its branches.
+Individuals do not evolve; populations do.
 This distinction can be confusing because we often reconstruct the phylogenetic tree by sequencing individual representatives from each population or species.
+(I concede that not everyone would agree with this interpretation!)
 
-Another way to think about the distinction between a phylogeny and a genealogy is that they are shaped by processes that operate on different time scales.
-A geneaology traces the ancestry within a population.
-Eventually, we reach an ancestor for all of the individuals whom we selected from the population.
-Frequently, that ancestor will be more recent than the time that the population became distinct from other populations.
-For example, suppose we pick two people (representatives of *Homo sapiens*).
-If we trace their ancestry back using their [mitochondrial DNA](https://en.wikipedia.org/wiki/Mitochondrial_DNA), the furthest back in time we will get is "[mitochondrial Eve](https://en.wikipedia.org/wiki/Mitochondrial_Eve)", an ancestor from roughly 150,000 years ago.
-The common ancestor of *Homo sapiens* and *H. erectus* is placed in the phylogeny roughly 315,000 years ago.
-If we choose two people who live in the same town, there is a fair possibility that they will have a great-great-grandmother in common, and we will fall well short of mitochondrial Eve.
-
-For another species, it is *possible* that their "Eve" predates their split from another species in the phylogeny.
+Phylogenies provide a rigorous framework for the systematic classification of related infectious diseases.
+Because characteristics (phenotypes) tend to be more similar between populations that are more closely related, mapping an infection to a phylogeny can provide an accurate and cost-effective prediction of clinically-significant phenotypes that would otherwise require weeks of laboratory processing to measure.
 
 
-### Anatomy of a phylogeny
-As we follow the branch from the tip down the tree, we will eventually reach its junction with one or more other branches that represents a common ancestor.
-This juncture is called an *ancestral node* or a *split*.
-Eventually, we reach the deepest node in the tree that may represent the most recent common ancestor or *root*.
-However, a tree may be unrooted so that the meaning of the deepest node is more ambiguous (more on this later).
+Phylogenies also enable us to address the problem that when we sample infections from a population, we are never working with a random sample of observed characteristics.
+For example, if we find that a number of infections that carry a specific mutation are also resistant to a particular drug, we are inclined to assume that this mutation is directly involved in the drug resistance phenotype.
+However, those infections could also happen to be closely related and, by chance, inherited the same mutation from their common ancestor.
+
+
+
+## Unrooted and rooted trees
+
+My description of following branches from the tips down towards the base of the tree implicitly assumes that the tree is arranged so that the oldest nodes are always "down".
+This requires knowledge about the earliest point in time on the tree, which we call the *root*.
+Placing a root on the phylogenetic tree is not a trivial task!
+By definition, it is the deepest node in the evolutionary history of the sampled populations, and so it is the most difficult to accurately reconstruct.
+The root is an enormously significant component of the phylogenetic tree because it controls the direction that time flows along its branches.
+Evolution always proceeds outwards from the root towards the tips.
+
+To illustrate, here is an interactive animation that depicts a phylogenetic tree that I reconstructed from some Ebola virus genome sequences.
+
+{% include rtt.html %}
+
+
+
+## Branch lengths
 
 The branches of the tree may be dimensionless, so that they contain no other information than the hypothesis that two nodes are directly related as an ancestor and descendant pair.
 Since length is meaningless in this case, we usually draw the branches with integer lengths that are consistent with their ancestral node's [height](https://en.wikipedia.org/wiki/Node_(computer_science)) in the tree, where the height is the largest number of nodes (including this ancestor) along the path to one of its descendant tips.
 Such a tree is called a *cladogram* or simply an "unscaled" tree.
 
 
-{% include rtt.html %}
+
 
 ### Counting trees
 
