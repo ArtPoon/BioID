@@ -1,8 +1,11 @@
 <!-- as an include file, this will be enclosed in HTML -->
 
 <style>
-    table {
+    .reroot table {
         width: 100%;
+    }
+    .reroot th {
+      font-size: 12pt;
     }
     rect {
         fill: none;
@@ -15,7 +18,11 @@
 
 <script src="{{ site.baseurl }}/public/js/phylo.js"></script>
 
-<table>
+<table class="reroot">
+    <tr>
+      <th>Unrooted tree</th>
+      <th>Rooted tree</th>
+    </tr>
     <tr>
         <!--<td colspan="2">-->
         <td>
@@ -25,11 +32,6 @@
             <div id="rooted"></div>
         </td>
     </tr>
-    <tr>
-        <td>
-            <div id="regression"></div>
-        </td>
-    </tr>
 </table>
 
-<script src="{{ site.baseurl }}/public/js/rtt.js"></script>
+<script src="{{ site.baseurl }}/public/js/rooting.js"></script>

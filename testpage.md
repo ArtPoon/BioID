@@ -4,6 +4,4 @@ title: Test page
 ---
 
 {% include loadD3.html %}
-{% include rtt.html %}
-
-
+{% include rooting.html %}

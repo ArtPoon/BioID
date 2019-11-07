@@ -398,9 +398,9 @@ function drawRootedTree(nodes) {
   // @param nodes: return value from rootedLayout()
   var rootedEdges = edges(nodes, rectangular=true);
 
-
+  // scale tree to SVG - make extra room for rooting on longest branch
   x2Scale.domain([
-    d3.min(nodes, xValue)-1, d3.max(nodes, xValue)+1
+    d3.min(nodes, xValue)-1, d3.max(nodes, xValue)+13
   ]);
   y2Scale.domain([
     d3.min(nodes, yValue)-0.1, d3.max(nodes, yValue)+0.1
@@ -451,12 +451,14 @@ function updateRootedTree(nodes) {
   //console.log(rootedEdges);
 
   // update svg2 domain
+  /*
   x2Scale.domain([
     d3.min(nodes, xValue)-1, d3.max(nodes, xValue)+1
   ]);
   y2Scale.domain([
     d3.min(nodes, yValue)-0.1, d3.max(nodes, yValue)+0.1
   ]);
+  */
 
   /*
   svg2.selectAll(".dot")

@@ -28,7 +28,13 @@ Individuals do not evolve; populations do.
 This distinction can be confusing because we often reconstruct the phylogenetic tree by sequencing individual representatives from each population or species.
 (I concede that not everyone would agree with this interpretation!)
 
-Phylogenies provide a rigorous framework for the systematic classification of related infectious diseases.
+
+
+
+
+## Why do we need phylogenies?
+
+In the field of infectious disease and molecular epidemiology, phylogenies provide a rigorous framework for the systematic classification of related infections.
 Because characteristics (phenotypes) tend to be more similar between populations that are more closely related, mapping an infection to a phylogeny can provide an accurate and cost-effective prediction of clinically-significant phenotypes that would otherwise require weeks of laboratory processing to measure.
 
 
@@ -38,7 +44,29 @@ However, those infections could also happen to be closely related and, by chance
 
 
 
-## Unrooted and rooted trees
+
+
+
+
+
+
+
+
+## Counting trees
+
+Even if we only consider unscaled trees, the number of trees that can relate a given number of tips is enormous!
+For just 10 tips, there are already over 2 million possible unrooted binary trees, and 17 times as many rooted trees (an unrooted binary tree with 10 tips has 17 branches).
+
+**Try changing the number of tips in this calculator to see how the numbers of different types of trees grows:**
+{% include numtrees.html %}
+
+When we are dealing with inconceivably large numbers such as these, we often start turning to rough analogies such as "the number of grains of sand on planet Earth" (about 7&times;10<sup>18</sup>, or about 19 tips) or "the number of atoms in the universe" (roughly 10<sup>80</sup>, or about 52 tips).
+Think about this: nowadays, we routinely work with trees that have thousands, or even tens of thousands of tips!
+
+
+## The anatomy of phylogenies
+
+### Rooted and unrooted trees
 
 My description of following branches from the tips down towards the base of the tree implicitly assumes that the tree is arranged so that the oldest nodes are always "down".
 This requires knowledge about the earliest point in time on the tree, which we call the *root*.
@@ -49,28 +77,25 @@ Evolution always proceeds outwards from the root towards the tips.
 
 To illustrate, here is an interactive animation that depicts a phylogenetic tree that I reconstructed from some Ebola virus genome sequences.
 
-{% include rtt.html %}
+**Use your mouse to grab the big yellow dot that represents the root on the unrooted tree, and slide it around to reroot the tree on the right**
+{% include rooting.html %}
 
 
 
-## Branch lengths
-
+### Scaled and unscaled trees
 The branches of the tree may be dimensionless, so that they contain no other information than the hypothesis that two nodes are directly related as an ancestor and descendant pair.
-Since length is meaningless in this case, we usually draw the branches with integer lengths that are consistent with their ancestral node's [height](https://en.wikipedia.org/wiki/Node_(computer_science)) in the tree, where the height is the largest number of nodes (including this ancestor) along the path to one of its descendant tips.
+Since length is meaningless in this case, we usually draw the branches with lengths that are multiples of some constant amount.
+Here's an example:
+<center>
+<img src="https://upload.wikimedia.org/wikipedia/commons/3/31/Cladogram-example1.svg" width="300px"/>
+</center>
+Note that the branch that connects "beetles" to the root is 3 times the length of the branches from either "butterflies and moths" or "flies" to their common ancestor.
 Such a tree is called a *cladogram* or simply an "unscaled" tree.
 
 
+### Rotating branches and ladderizing
 
 
-### Counting trees
-
-Even if we only consider unscaled trees, the number of trees that can relate a given number of tips is enormous!
-For just 10 tips, there are already over 2 million possible unrooted binary trees, and 17 times as many rooted trees (an unrooted binary tree with 10 tips has 17 branches).
-Try changing the number of tips in this calculator to see how the numbers of different types of trees grows:
-{% include numtrees.html %}
-
-When we are dealing with inconceivably large numbers such as these, we often start turning to rough analogies such as "the number of grains of sand on planet Earth" (about 7&times;10<sup>18</sup>, or about 19 tips) or "the number of atoms in the universe" (roughly 10<sup>80</sup>, or about 52 tips).
-Think about this: nowadays, we routinely work with trees that have thousands, or even tens of thousands of tips!
 
 ### Polytomies
 
@@ -86,7 +111,10 @@ A polytomy is *soft* if the true tree is binary and there is insufficient data t
 Otherwise, we assume that it is a *hard* polytomy that represents a genuinely multiple split.
 
 
-## Distance-based trees
+## Building trees
+
+
+### Distance-based trees
 
 How can we determine whether two sequences are related by a more recent common ancestor than another pair?
 Since we usually cannot directly observe the descent of populations from ancestors, we have to infer the order of events from the pattern of similarity among the populations that we *can* directly observe.
@@ -125,23 +153,25 @@ and transversions between `A` and `C` are disproportionately rare.
 
 There are several clustering algorithms that can be used to transform a distance matrix into a tree.
 Rather than review a selection of these algorithms, I am only going to talk about the clustering algorithm that is the most widely used today: neighbor-joining.
-
-
-### Neighbor-joining trees
-
 The neighbor-joining (NJ) method was introduced by [Saitou and Nei](https://academic.oup.com/mbe/article/4/4/406/1029664) in 1987.
 This method starts with a star phylogeny, where every sequence in the data set is directly descended from the same single common ancestor (so it literally looks like a tree!).
 The objective of the subsequent steps is to progressively add ancestral nodes in such a way that minimizes the total branch length of the tree.
 
+**Click "Step!" to make the animation proceed through one step of the NJ algorithm.**
 {% include njtree.html %}
 
-## Likelihood
 
 
-## Maximum likelihood trees
+
+### Maximum likelihood
+
+
+### Bayesian inference
+
 
 
 ## Software
 
 
 ## Further readings
+* Felsenstein, J. (2004). Inferring Phylogenies. Sunderland, MA: Sinauer Associates. 
