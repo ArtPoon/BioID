@@ -81,6 +81,9 @@ To illustrate, here is an interactive animation that depicts a phylogenetic tree
 {% include rooting.html %}
 
 
+It is difficult to locate the root.
+{% include rtt.html %}
+
 
 ### Scaled and unscaled trees
 The branches of the tree may be dimensionless, so that they contain no other information than the hypothesis that two nodes are directly related as an ancestor and descendant pair.
@@ -174,4 +177,4 @@ The objective of the subsequent steps is to progressively add ancestral nodes in
 
 
 ## Further readings
-* Felsenstein, J. (2004). Inferring Phylogenies. Sunderland, MA: Sinauer Associates. 
+* Felsenstein, J. (2004). Inferring Phylogenies. Sunderland, MA: Sinauer Associates.
