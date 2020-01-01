@@ -1,17 +1,27 @@
 var margin = {top: 10, right: 10, bottom: 10, left: 10},
-    width = 500,
-    height = 500,
+    width = 400,
+    height = 400,
     svg = d3.select("div#unrooted")
             .append("svg")
             .attr("width", width)
             .attr("height", height)
             .append("g");
 
+var width2 = 400,
+    height2 = 400;
+
+var svg2 = d3.select("div#rooted")
+             .append("svg")
+             .attr("width", width2)
+             .attr("height", height2)
+             .append("g");
+
+
 // set up plotting scales
 var xValue = function(d) { return d.x; },
     xScale = d3.scale.linear().range([0, width]),
-    xMap = function(d) { return xScale(xValue(d)); },
-    xMap1 = function(d) { return xScale(d.x1); },
+    xMap = function(d) { return xScale(xValue(d)); },  // points
+    xMap1 = function(d) { return xScale(d.x1); },  // lines
     xMap2 = function(d) { return xScale(d.x2); },
     xAxis = d3.svg.axis().scale(xScale).orient("bottom");
 
@@ -21,6 +31,24 @@ var yValue = function(d) { return d.y; },
     yMap1 = function(d) { return yScale(d.y1); },
     yMap2 = function(d) { return yScale(d.y2); },
     yAxis = d3.svg.axis().scale(yScale).orient("left");
+
+
+// set up plotting scales
+var x2Scale = d3.scale.linear().range([0, width2]),  // map domain to range
+    x2Map = function(d) { return x2Scale(xValue(d)); },
+    x2Map1 = function(d) { return x2Scale(d.x1); },
+    x2Map2 = function(d) { return x2Scale(d.x2); },
+    x2Axis = d3.svg.axis().scale(x2Scale).orient("bottom");  // draw axis
+
+var y2Scale = d3.scale.linear().range([height2, 0]),
+    y2Map = function(d) { return y2Scale(yValue(d)); },
+    y2Map1 = function(d) { return y2Scale(d.y1); },
+    y2Map2 = function(d) { return y2Scale(d.y2); },
+    y2Axis = d3.svg.axis().scale(y2Scale).orient("left");
+
+
+// color palette
+var palette = d3.scale.category20();
 
 var tree = readTree(example);
 equalAngleLayout(tree);
@@ -65,14 +93,20 @@ svg.selectAll("lines")
     .data(data)
     .enter().append("circle")
     .attr("class", "dot")
-    .attr("r", 5)
+    .attr("r", function(d) {
+      if (d.isTip) {
+        return(6);
+      } else {
+        return(4);
+      }
+    })
     .attr("cx", xMap)
     .attr("cy", yMap)
     .attr("stroke", "black")
     .attr("stroke-width", 2)
     .attr("fill", function(d) {
       if (d.isTip) {
-        return("#777");
+        return(palette(d.thisId));
       } else {
         return("white");
       };
@@ -80,12 +114,20 @@ svg.selectAll("lines")
 
 // TODO: draw tip labels (years)
 
-// add circle
+// draw the meatball
 var circle1 = svg.append("circle")
                 .attr("cx", xScale(0))
                 .attr("cy", yScale(0))
                 .attr("r", 10)
-                .attr("fill", "red");
+                .attr("stroke", "black")
+                .attr("stroke-width", 2)
+                .attr("fill", "gold");
+
+// draw initial rooted tree
+var rootedTree = rerootTree( closestEdge([xScale(0), yScale(0)]) );
+rootedLayout(rootedTree);
+drawRootedTree(rootedTree);
+
 
 // check if mouse button is pressed
 var mouseDown = false;
@@ -98,7 +140,7 @@ svg.append("rect")
    .attr("height", height)
    .on("mousemove", function() {
        if (mouseDown) {
-        var m = d3.mouse(this),
+        var m = d3.mouse($("rect")[0]),
             p = closestEdge(m),
             rootedTree;
 
@@ -108,9 +150,11 @@ svg.append("rect")
 
          // update nodes
          rootedTree = rerootTree(p);
-         console.log(rootedTree);
+         rootedLayout(rootedTree);
+         //console.log(rootedTree);
+
          // update rooted tree
-         //drawRootedTree(rootedTree);
+         updateRootedTree(rootedTree);
        }
    });
 
@@ -127,39 +171,39 @@ function closestEdge(ptr) {
         minpart, minblen, closest;
 
     for (const e of edgeset) {
-        // first, calculate the hypoteneuse (distance
-        // from ptr to each node)
-        dx = px - xScale(e.x1);
-        dy = py - yScale(e.y1);
-        hyp1 = dx*dx + dy*dy;  // no sqrt
+      // first, calculate the hypoteneuse (distance
+      // from ptr to each node)
+      dx = px - xScale(e.x1);
+      dy = py - yScale(e.y1);
+      hyp1 = dx*dx + dy*dy;  // no sqrt
 
-        dx = px - xScale(e.x2);
-        dy = py - yScale(e.y2);
-        hyp2 = dx*dx + dy*dy;  // no sqrt
+      dx = px - xScale(e.x2);
+      dy = py - yScale(e.y2);
+      hyp2 = dx*dx + dy*dy;  // no sqrt
 
-        // branch length at user scale
-        dx = xScale(e.x1) - xScale(e.x2);
-        dy = yScale(e.y1) - yScale(e.y2);
-        blen = Math.sqrt(dx*dx + dy*dy);
+      // branch length at user scale
+      dx = xScale(e.x1) - xScale(e.x2);
+      dy = yScale(e.y1) - yScale(e.y2);
+      blen = Math.sqrt(dx*dx + dy*dy);
 
-        // next, calculate branch length part
-        // note we left hyp1 and hyp2 squared
-        part = (hyp1 - hyp2 + blen*blen) /
-                (2*blen);
-        if (part < 0 || part > blen) {
-            continue;
-        }
+      // next, calculate branch length part
+      // note we left hyp1 and hyp2 squared
+      part = (hyp1 - hyp2 + blen*blen) /
+              (2*blen);
+      if (part < 0 || part > blen) {
+          continue;
+      }
 
-        // finally calculate distance to branch
-        dist = Math.sqrt(hyp1 - part*part);
-        //console.log(part, blen, dist);
+      // finally calculate distance to branch
+      dist = Math.sqrt(hyp1 - part*part);
+      //console.log(part, blen, dist);
 
-        if (dist < mindist) {
-            mindist = dist;
-            minpart = part;  // this is useful
-            minblen = blen;
-            closest = e;
-        }
+      if (dist < mindist) {
+          mindist = dist;
+          minpart = part;  // this is useful
+          minblen = blen;
+          closest = e;
+      }
     }
 
     // solve for coordinates of point on closest edge
@@ -175,18 +219,6 @@ function closestEdge(ptr) {
 //============================================================//
 // to plot the rooted tree, we need to calculate the cumulative
 // branch lengths
-
-var width2 = 500,
-    height2 = 500;
-
-var svg2 = d3.select("div#rooted")
-             .append("svg")
-             .attr("width", width2)
-             .attr("height", height2)
-             .append("g");
-
-var xScale2 = d3.scale.linear().range([0, width]),
-    yScale2 = d3.scale.linear().range([height, 0]);
 
 
 function rerootTree(p) {
@@ -267,9 +299,41 @@ function nodeDepth(idx, nodes) {
 }
 
 
+function countTips(idx, nodes) {
+  // recursive function to annotate nodes with number of tips
+  var node = nodes[idx],
+      child;
+
+  if (node.isTip) {
+    node.ntips = 1;
+  }
+  else {
+    node.ntips = 0;
+    for (const childIdx of node.children) {
+      node.ntips += countTips(childIdx, nodes);
+    }
+  }
+  return (node.ntips);
+}
+
 function postOrderByIndex(idx, nodes, list=[]) {
-  var node = nodes[idx];
+  // recursive function to generate a list of node indices
+  // that orders children before parents
+  var node = nodes[idx],
+      temp = [],
+      child;
+
+  // sort children by number of tips
   for (const childIdx of node.children) {
+    child = nodes[childIdx];
+    temp.push(child);
+  }
+  temp.sort(function(a, b) {
+      return a.ntips - b.ntips;
+  })
+
+  for (const childIdx of temp.map(x=>x.thisId)) {
+    // append child indices to list
     list = postOrderByIndex(childIdx, nodes, list);
   }
   list.push(node);
@@ -277,6 +341,8 @@ function postOrderByIndex(idx, nodes, list=[]) {
 }
 
 function getTips(nodeIndex, nodes) {
+  // recursive function to annotate nodes with the
+  // y-position of tips
   var node = nodes[nodeIndex],
       child;
   if (node.isTip) {
@@ -292,11 +358,18 @@ function getTips(nodeIndex, nodes) {
 }
 
 
-function drawRootedTree(nodes) {
+function rootedLayout(nodes) {
+  // calculates (x,y) coordinates for tips
+  // TODO: calculate coordinates for internal nodes
+  //
+  // @param nodes: return value from rerootTree()
   var rootIdx = nodes.length-1;
 
-  // calculate node depths
+  // calculate node depths - populates node.x
   nodeDepth(rootIdx, nodes);
+
+  // count tips per nodes to ladderize tree
+  countTips(rootIdx, nodes);
 
   // order tips by postorder traversal
   var orderedNodes = [];
@@ -307,7 +380,6 @@ function drawRootedTree(nodes) {
   for (var i=0; i<ntips; i++) {
     tips[i].y = (i+0.5)/ntips;  // this is carried over to nodes
   }
-  return;
 
   // calculate vertical location of internal nodes
   getTips(rootIdx, nodes);
@@ -318,25 +390,98 @@ function drawRootedTree(nodes) {
     }
     node.y = temp / node.y.length;
   }
+}
 
 
-  xScale2.domain([
-    d3.min(nodes, xValue), d3.max(nodes, xValue)
+function drawRootedTree(nodes) {
+  // update SVG with rooted tree layout
+  // @param nodes: return value from rootedLayout()
+  var rootedEdges = edges(nodes, rectangular=true);
+
+  // scale tree to SVG - make extra room for rooting on longest branch
+  x2Scale.domain([
+    d3.min(nodes, xValue)-1, d3.max(nodes, xValue)+13
   ]);
-  yScale2.domain([
-    d3.min(nodes, yValue), d3.max(nodes, yValue)
+  y2Scale.domain([
+    d3.min(nodes, yValue)-0.1, d3.max(nodes, yValue)+0.1
   ]);
 
-   // draw points
+
+  // draw lines
+  svg2.selectAll("lines")
+      .data(rootedEdges)
+      .enter().append("line")
+      .attr("class", "lines")
+      .attr("x1", x2Map1)
+      .attr("y1", y2Map1)
+      .attr("x2", x2Map2)
+      .attr("y2", y2Map2)
+      .attr("stroke-width", 3)
+      .attr("stroke", "#777")
+      .attr("stroke-linecap", "square");
+
   svg2.selectAll(".dot")
       .data(nodes)
       .enter().append("circle")
       .attr("class", "dot")
-      .attr("r", 5)
-      .attr("cx", xMap)
-      .attr("cy", yMap)
+      .attr("r", function(d) {
+        if (d.isTip) {
+          return(6);
+        } else {
+          return(4);
+        }
+      })
+      .attr("cx", x2Map)
+      .attr("cy", y2Map)
       .attr("stroke", "black")
       .attr("stroke-width", 2)
-      .attr("fill", "white");
+      .attr("fill", function(d) {
+        if (d.isTip) {
+          return(palette(d.thisId));
+        } else {
+          return("white");
+        }
+      });
+}
 
+
+function updateRootedTree(nodes) {
+  // call to update
+  var rootedEdges = edges(nodes, rectangular=true);
+  //console.log(rootedEdges);
+
+  // update svg2 domain
+  /*
+  x2Scale.domain([
+    d3.min(nodes, xValue)-1, d3.max(nodes, xValue)+1
+  ]);
+  y2Scale.domain([
+    d3.min(nodes, yValue)-0.1, d3.max(nodes, yValue)+0.1
+  ]);
+  */
+
+  /*
+  svg2.selectAll(".dot")
+      .data(nodes)
+      .transition().duration(100)
+      .attr("cx", x2Map)
+      .attr("cy", y2Map);
+  */
+
+  svg2.selectAll(".lines")
+      .data(rootedEdges)
+      .transition().duration(100)
+      .ease('linear')
+      .attr("x1", x2Map1)
+      .attr("y1", y2Map1)
+      .attr("x2", x2Map2)
+      .attr("y2", y2Map2);
+
+  svg2.selectAll(".dot")
+      .data(nodes)
+      .transition().duration(100)
+      .ease('linear')
+      .attr("cx", x2Map)
+      .attr("cy", y2Map);
+  //svg2.selectAll("")
 }

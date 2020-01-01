@@ -1,0 +1,37 @@
+<!-- as an include file, this will be enclosed in HTML -->
+
+<style>
+    .reroot table {
+        width: 100%;
+    }
+    .reroot th {
+      font-size: 12pt;
+    }
+    rect {
+        fill: none;
+        cursor: grab;
+        pointer-events: all;
+    }
+</style>
+
+
+
+<script src="{{ site.baseurl }}/public/js/phylo.js"></script>
+
+<table class="reroot">
+    <tr>
+      <th>Unrooted tree</th>
+      <th>Rooted tree</th>
+    </tr>
+    <tr>
+        <!--<td colspan="2">-->
+        <td>
+            <div id="unrooted"></div>
+        </td>
+        <td>
+            <div id="rooted"></div>
+        </td>
+    </tr>
+</table>
+
+<script src="{{ site.baseurl }}/public/js/rooting.js"></script>
