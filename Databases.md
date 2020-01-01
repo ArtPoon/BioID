@@ -43,6 +43,49 @@ The directory listing command `ls` tells us that the text file containing the *h
 This course is about infectious diseases, so we're generally not going to be dealing with genomes on the scale of human chromosomes.  However, we *are* going to be dealing with very large *numbers* of sequences.  Cumulatively, sequences derived from viruses with even the smallest genomes (comprising only a few thousand nucleotides) can readily attain file sizes measured in gigabytes, because we often want to characterise a large number of sequences from a diverse population of viruses that have been sampled from an infection.
 
 
+## The birth of bioinformatics
+
+Arguably, bioinformatics began with the collection of protein sequences and structures.
+By the 1950s, biologists had developed laboratory methods to determine the sequence of amino acids that made up a particular protein, and crystallographic methods to determine how these amino acids determined how the protein would fold into a functional shape.
+These sequences and structures had an immediate impact on our understanding of how proteins worked. 
+More importantly, however, it allows us to look at the sequences of two different proteins and how similar they were.
+When a lab had generated an amino acid sequence, it was usually published in a type-set article.
+Gathering published sequences from different articles was a time-consuming and tedious process, however, and compiling sequences from different sources became a valuable resource.
+
+*The Atlas of Protein Sequence and Structure* compiled by Margaret Dayhoff and Richard Ecks was one of the first and most comprehensive collections of protein data that was published annually with updated records.
+Dayhoff was the associate director of the National Biomedical Research Foundation, a non-profit institute that was established in 1960 to explore the applications of computers to biology and medicine.
+Both Dayhoff and Eck were working on developing computer programs to search for common features among protein sequences.
+These and similar computational tools played a significant role in the curation of the *Atlas*. 
+Amino acid sequences were stored and processed on [punch cards](https://en.wikipedia.org/wiki/Punched_card).
+The *Atlas* had an explicitly evolutionary perspective to the diversity of protein sequences.
+Sequences were organized into gene families, and the *Atlas* displayed alignments of related sequences so the reader could visually distinguish between conserved and variable regions of the proteins. 
+
+Scientists were invited to contribute sequences to the *Atlas* in return for a free copy, with limited success (Strasser 2011); nevertheless, through manual curation of sequences from the published literature, it became a popular resource for many in the scientific community.
+However, there were also scientists who were critical of the *Atlas*.
+For instance, Eck and Dayhoff refused to allow the *Atlas* to become a method for authors to establish priority (*i.e.*, to have derived a sequence before anyone else).
+The *Atlas* was published as copyrighted material and redistribution of its contents was prohibited --- without substantial grant funding to support its maintanence, Dayhoff adopted a proprietary commercial approach to sustaining the *Atlas* (Strasser 2011).
+Furthermore, the work was viewed by some as a derivative work that merely collected the hard-earned results of experimentalists.
+As argued by Strasser (2010), the *Atlas* was a significant contribution to science because it fostered the development of new computational methods.
+For instance, Dayhoff and Eck incorporated into the *Atlas* their proposals for new methods for analyzing protein sequences, including the reconstruction of the evolutionary tree (phylogeny) relating sequences and the ancestral sequences at the root of the tree.
+In 1966, Dayhoff and Eck published in the *Atlas* the first phylogeny generated from protein sequences using a computer.
+
+
+In 1981, the National Institutes of Health issued a request for proposals to to fund a national nucleic acid sequence database.
+One of the proposals selected for review was from Dayhoff; another came from Walter Goad, a theoretical physicist at the Los Alamos National Laboratory who had contributed to the development of thermonuclear bombs. 
+The contract was ultimately awarded to Goad and the LANL, which would eventually become what is known today as [Genbank](https://www.ncbi.nlm.nih.gov/genbank/).
+Dayhoff died eight months afterwards of heart failure.
+She was a pioneer of sequence analysis and was referred to as the "mother and father of bioinformatics".
+
+> She established the three major components of what a bioinformaticist does: a mixture of their own basic discoveries with the data, which are biological discoveries; tool development, where they share those tools with other people; and resource development.  She did all three, and she did incredibly important things in all three.
+- [David Lipman](https://en.wikipedia.org/wiki/David_J._Lipman), to [Glyn Moody](https://en.wikipedia.org/wiki/Glyn_Moody)
+
+
+Sources:
+* Strasser BJ. Collecting, comparing, and computing sequences: the making of Margaret O. Dayhoff’s Atlas of Protein Sequence and Structure, 1954–1965. Journal of the History of Biology. 2010 Dec 1;43(4):623-60.
+* Strasser BJ. The experimenter's museum: GenBank, natural history, and the moral economies of biomedicine. Isis. 2011 Mar 1;102(1):60-96.
+* Moody G. Digital code of life: how bioinformatics is revolutionizing science, medicine, and business. John Wiley & Sons; 2004 Feb 3.
+* Hagen JB. The origins of bioinformatics. Nature Reviews Genetics. 2000 Dec;1(3):231.
+
 ## What is a database?
 
 A database is a systematic collection of data. 
@@ -289,7 +332,7 @@ To illustrate, I've reproduced a portion of a table from a publication in the Br
 | Measles | 3268 | 153 | 37 | 40 | 73 |
 
 and here are the same data in a CSV format:
-```CSV
+```csv
 Cases,Eng. & Wales,Grt. Lnd,Scot.,N.Ire.,Eire
 Diptheria,0,0,1,0,
 Dysentry,482,85,136,5,2
@@ -299,9 +342,6 @@ Measles,3268,153,37,40,73
 ```
 
 
-## Relational databases
-
-When you are doing something online that involves transferring information, you are usually interacting with a database.  
 
 
 
