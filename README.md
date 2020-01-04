@@ -13,43 +13,45 @@ This undergraduate course is designed to cover a broad domain of bioinformatics 
 
 ## Outline
 1. [Databases](Databases.md)
-   * NCBI GenBank
+   * Genbank and the birth of bioinformatics
+   * What is a database?
+   * Sequence formats
+2. [Alignment](Alignment.md)
    * scoring matrices
    * BLAST queries
-2. [Alignment](Alignment.md)
    * Smith-Waterman and related algorithms
-   * homology search and domain prediction
 3. [Genetic diversity](Clustering.md)
-   * measures of diversity (entropy)
    * genetic distances
    * virus nomenclature
    * molecular epidemiology (genetic clustering)
 4. [Building trees](Trees.md)
    * Distance-based methods (neighbor-joining)
    * Rooting (outgroup, midpoint)
-   * 16S rRNA
+   * Maximum likelihood
 5. [Measuring rates of evolution](Rates.md)
+   * Diversity
    * Markov chain models (Jukes-Cantor)
    * Rates of evolution
-   * Probability and maximum likelihood
    * Detecting selection
 6. [Molecular clocks](Clocks.md)
    * Rescaling trees
    * Root-to-tip methods
-   * Dating zoonoses
-7. [Modeling epidemics](Models.md)
-   * Compartmental models
-   * Kingman's coalescent
    * Bayesian inference
-   * Demographic growth models (skylines)
-8. [Next-generation sequencing](NGS.md)
-   * NGS data formats
+   * The coalescent
+7. [Next-generation sequencing](NGS.md)
+   * NGS data formats, databases
+   * Quality scores
    * Short-read mapping
-   * RNA-Seq analysis
-9. [Genomics](Ecology.md)
-   * de novo assembly of NGS data
-   * metagenomics
-   * novel pathogens
+   * De-novo assembly
+8. [Applications](Applications.md)
+   * Pathogen discovery
+   * 16S rRNA, microbial ecology
+   * RNA-seq
+9. [Scripting](Scripting.md)
+   * Scripting languages
+10. [Ethics](Ethics.md)
+   * Ethics
+
 
 
 ## GitHub repository
