@@ -86,6 +86,7 @@ Sources:
 * Moody G. Digital code of life: how bioinformatics is revolutionizing science, medicine, and business. John Wiley & Sons; 2004 Feb 3.
 * Hagen JB. The origins of bioinformatics. Nature Reviews Genetics. 2000 Dec;1(3):231.
 
+
 ## What is a database?
 
 A database is a systematic collection of data. 
@@ -95,7 +96,7 @@ As the pile of paper gets higher, it becomes more and more difficult to retrieve
 
 This section is going to focus mainly on genetic sequence databases.
 There are many other kinds of [biological databases](https://en.wikipedia.org/wiki/List_of_biological_databases), such as the [Protein Data 
-Bank](https://www.rcsb.org/) that stores the coordinate data of three-dimensional protein structures, the increasing commoditization of next-generatoin sequencing has caused genetic sequence data to supercede other sources of biological data.
+Bank](https://www.rcsb.org/) that stores the coordinate data of three-dimensional protein structures, the increasing commoditization of next-generation sequencing has caused genetic sequence data to supercede other sources of biological data.
 For instance, microarrays were the primary technology for measuring gene expression until the advent of [RNA-Seq](https://en.wikipedia.org/wiki/RNA-Seq).
 Similarly, [16S ribosomal RNA](https://en.wikipedia.org/wiki/16S_ribosomal_RNA) sequencing has largely superceded indirect assays of 16S variation such as [gradient gel eletrophoresis](https://en.wikipedia.org/wiki/RNA-Seq) to quantify the composition of microbial communities.
 
