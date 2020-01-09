@@ -82,7 +82,7 @@ To illustrate, here is an interactive animation that depicts a phylogenetic tree
 
 
 It is difficult to locate the root.
-{% include rtt.html %}
+
 
 
 ### Scaled and unscaled trees
