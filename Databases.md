@@ -124,7 +124,7 @@ We can use a bit of Python to do the math:
 1861920.2161695
 ```
 
-This would take about 1.8 thousand kilograms (metric tonnes) of paper! 
+This would take about 1.8 thousand metric tonnes (1.8 thousand metric tonnes) of paper! 
 (That's equivalent to about two dozen [fully-loaded Boeing 737s](https://en.wikipedia.org/wiki/List_of_airliners_by_maximum_takeoff_weight).)
 
 
@@ -132,7 +132,7 @@ This would take about 1.8 thousand kilograms (metric tonnes) of paper!
 
 There are countless other public databases with genetic sequences that you can access on the web.
 Many of these databases focus on a specific organism (*e.g.,* human immunodeficiency virus type 1) or genomic feature ([microsatellites](https://en.wikipedia.org/wiki/Microsatellite)).
-Changes are that for your research interest, there is already a database out there catering to your needs.
+Chances are that for your research interest, there is already a database out there catering to your needs.
 
 The following table is *not* a comprehensive listing of public sequence databases.
 (It's mostly a place for me to record ones that I've come across while preparing these course readings.)
